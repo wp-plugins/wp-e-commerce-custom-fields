@@ -1,48 +1,49 @@
-=== WP e-Commerce - Store Toolkit ===
+=== WP e-Commerce - Custom Fields ===
 
-Contributors: visser
+Contributors: Michael Visser, Ryan Waggoner
 Donate link: http://www.visser.com.au/#donations
-Tags: wp-e-commerce, mod, delete store, clean store, nuke, store toolkit
+Tags: wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
-Tested up to: 3.3.1
-Stable tag: 1.7.7
-
-Store Toolkit – formally Nuke – includes a growing set of commonly-used WP e-Commerce administration tools aimed at web developers and store maintainers.
+Tested up to: 3.3
+Stable tag: 1.4.3
 
 == Description ==
 
-Features include:
-
-* Re-link broken WP e-Commerce Pages
-* Re-link existing Sales from pre-registered Users
-* Repair WordPress option 'wpsc_version'
-* Manage Permalinks for WP e-Commerce Pages (e.g. Products Page, Checkout, etc.)
-* Nuke support for clearing WP e-Commerce store records
-
-If you find yourself in the situation where you need to start over with a fresh installation of WP e-Commerce then a 'nuke' will do the job.
+Add and manage custom Product meta details within WP e-Commerce.
 
 For more information visit: http://www.visser.com.au/wp-ecommerce/
 
 == Installation ==
 
-1. Upload the folder 'wp-e-commerce-store-toolkit' to the '/wp-content/plugins/' directory
-2. Activate 'WP e-Commerce Store Toolkit' through the 'Plugins' menu in WordPress
+1. Upload the folder 'wp-e-commerce-custom-fields' to the '/wp-content/plugins/' directory
 
-That's it!
+2. Activate 'Custom Fields for WP e-Commerce' through the 'Plugins' menu in WordPress
 
 == Usage ==
 
 ==== In WP e-Commerce 3.7 ====
 
-1. Open Store > Store Toolkit
+1. Open Store > Custom Fields within the WordPress Administration
 
 ==== In WP e-Commerce 3.8 ====
 
-1. Open Tools > Store Toolkit
+1. Open Settings > Custom Fields within the WordPress Administration
 
 ====
 
-2. Select which WP e-Commerce details you would like to remove and click Nuke
+2. Create new custom Product meta fields by clicking Add New
+
+==== In WP e-Commerce 3.7 ====
+
+3. Open Store > Products and select a Product
+
+==== In WP e-Commerce 3.8 ====
+
+3. Open Products and select a Product
+
+====
+
+4. Fill in your custom Product meta value and copy the provided PHP snippet into your template
 
 Done!
 
@@ -54,113 +55,112 @@ http://www.visser.com.au/wp-ecommerce/forums/
 
 == Changelog ==
 
-= 1.7.7 =
-* Fixed: Not deleting Custom Post Types other than Published
+= 1.4.3 =
+* Fixed: Custom Fields not saving more than one field
 
-= 1.7.6 =
-* Fixed: WP e-Commerce Plugins widget markup
-* Fixed: Error removing Tags under WP e-Commerce 3.7
-
-= 1.7.5 =
-* Fixed: Count of Custom Fields
-* Added: All in One SEO Pack widget for Add/Edit Products
-
-= 1.7.4 =
-* Added: Support for custom fields
-* Fixed: Count Product images under WP e-Commerce 3.8
-
-= 1.7.3 =
-* Fixed: Styling issue within Plugins Dashboard widget
-
-= 1.7.2 =
-* Added: Alt. switch to wpsc_get_action()
-
-= 1.7.1 =
-* Fixed: Removing Product Enquiries under WP e-Commerce 3.7
-* Fixed: progress.gif not showing
-
-= 1.7 =
-* Fixed: Issue introduced with wpsc_get_action()
-
-= 1.6.9 =
-* Changed: Performance improvements to WP e-Commerce Plugins widget
-* Added: Automatic Plugin updates
-* Added: Added template for Permalinks
-
-= 1.6.8 =
-* Added: Integrated Version Monitor into Plugin
-
-= 1.6.7 =
-* Added: Support for Store Menu, will relocate menu to Store if Plugin is detected
-* Added: Support for changing the Pending Message appearing in Purchase Receipts and Transaction Results
-* Added: Support for changing the Pending Message subject sent to customers in Purchase Receipts
-
-= 1.6.6 =
-* Added: Support for clearing out the contents of wp_wpsc_claimed_stock
-
-= 1.6.5 =
-* Fixed: Issue where all Product images were being erased
-* Added: Physical file removal support for Product images in WP e-Commerce 3.8
-
-= 1.6.4 =
-* Changed: Moved ..._check_plugin_version() to functions.php
-* Changed: Migrated Plugin prefix from 'vl_wpscn' to 'wpsc_st'
-
-= 1.6.3 =
-* Added: Merged Manage Permalinks functionality into Store Toolkit
-* Changed: Renamed Plugin from Nuke to Store Toolkit
-* Added: Support for repairing corrupt 'wpsc_version' WordPress option after unsuccessful upgrades
-
-= 1.6.2 =
-* Changed: wp_delete_post() for removal of Products in WP e-Commerce 3.8
-* Fixed: Tools menu not showing Nuke option
-* Changed: Renamed menu item from 'Nuke WP e-Commerce' to 'Nuke'
-
-= 1.6.1 =
-* Changed: Removal of Add to Wishlist records from WordPress database in WP e-Commerce 3.8
-
-= 1.6 =
-* Added: Support for re-linking existing Sales from pre-registered Users
-
-= 1.5.7 =
-* Fixed: Issue removing Products within WP e-Commerce 3.8.3
-
-= 1.5.6 =
-* Added: Missing wpsc_get_major_version()
-
-= 1.5.5 =
-* Added: Urgent support for WP e-Commerce 3.8+
-
-= 1.5.4 =
-* Added: Support for 'Re-link WP e-Commerce Pages' in WP e-Commerce 3.8 after corrupt database upgrade
-
-= 1.5.3 =
-* Added: Support for WP e-Commerce 3.8 official
-* Added: Support for removal of Credit Card entries
-
-= 1.5.2 =
-* Added: Support for WP e-Commerce 3.8 RC2
-
-= 1.5.1 =
-* Added: Support for Windows systems
-* Fixed: Issue removing files from /downloadables/
-
-= 1.5 =
-* Added: Support for WP e-Commerce 3.8
+= 1.4.1 =
+* Changed: Using checked() and selected()
+* Fixed: Show name is turned on by default for new custom fields
+* Changed: Using the 'slug' attribute only displays the custom field value
+* Changed: Using wp_parse_args() for slug attribte processing
 
 = 1.4 =
-* Added: Tag support
-* Changed: Displayed disabled checkbox's instead of no checkbox for empty records
+* Added: Show name option to custom field
+* Added: Prefix and suffix options to custom field
+
+= 1.3.9 =
+* Fixed: WP e-Commerce Plugins widget markup
+
+= 1.3.8 =
+* Fixed: Styling issue within Plugins Dashboard widget
+
+= 1.3.7 =
+* Added: Alt. switch to wpsc_get_action()
+
+= 1.3.6 =
+* Fixed: Issue introduced with wpsc_get_action()
+
+= 1.3.5 =
+* Added: wpsc_get_action() to common.php
+* Changed: Updated how Positions are displayed within Settings
+* Fixed: Update not triggering on Plugin update
+
+= 1.3.4 =
+* Fixed: First time activation not firing
+* Fixed: Performance improvements for WP e-Commerce Plugins widget
+* Added: Automatic Plugin updates
+
+= 1.3.3 =
+* Added: Integrated Version Monitor into Plugin
+
+= 1.3.2 =
+* Added: Auto-generate slugs for custom fields
+* Changed: Reformatted readme.txt
+* Added: Order option added to custom fields
+
+= 1.3.1 =
+* Added: WYSIWYG editor option as field type
 
 = 1.3 =
-* Added: Support for nuking Add to Wishlist contents
-* Added: Automatic Plugin update notification
+* Added: 'slug' attribute to output individual custom fields within wpsc_the_custom_fields()
+
+= 1.2.9 =
+* Added: ID support to individual custom fields
+
+= 1.2.8 =
+* Added: Default empty value to Add/Edit Products for dropdown
+
+= 1.2.7 =
+* Changed: Dropped support of wpsc_is_single_product()
+* Fixed: Non-save state for dropdown type
+
+= 1.2.6 =
+* Changed: Replaced wpsc_is_single_product()
+* Changed: Cleaned up template files
+* Changed: Removed wpsc_cf_check_plugin_version()
+
+= 1.2.5 =
+* Added: Support for drop-down custom fields
+
+= 1.2.4 =
+* Added: Separate template files
+* Added: Layouts; table, ordered and unordered list
+* Added: Template tags
+
+= 1.2.3 =
+* Fixed: Hide Custom Fields header if no Custom Fields are entered for a Product
+* Added: Header option
+* Added: Show/hide Header option
+* Fixed: Updated readme.txt
+
+= 1.2.2 =
+* Added: Position and manual placement template tag
+* Changed: Replaced existing template tag hint with description
+
+= 1.2.1 =
+* Changed: Migrated Plugin prefix from 'vl_wpsccf' to 'wpsc_cf'
 
 = 1.2 =
-* Added: Administration page
+* Changed: Moved ..._check_plugin_version() to functions.php
 
 = 1.1 =
-* Changed: Migrated custom Page Template solution to a WordPress Plugin
+* Added: Support for custom field types (field/textarea)
+
+= 1.0.5 =
+* Fixed: Missing wpsc_get_major_version()
+
+= 1.0.4 =
+* Fixed: Bug affecting Plugin update notification
+
+= 1.0.3 =
+* Added: Urgent support for WP e-Commerce 3.8+
+
+= 1.0.2 =
+* Fixed: Better support for WP e-Commerce 3.8 Official (thanks Ryan Waggoner)
+
+= 1.0.1 =
+* Added: Support for WP e-Commerce 3.8
+* Fixed: Missing Settings menu for WP e-Commerce 3.8
 
 = 1.0 =
 * Added: First working release of the Plugin
