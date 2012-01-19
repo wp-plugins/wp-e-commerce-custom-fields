@@ -48,9 +48,9 @@ if( !function_exists( 'wpsc_vm_dashboard_setup' ) ) {
 
 	function wpsc_vm_dashboard_setup() {
 
-		global $wpsc_cf;
+		global $wpsc_st;
 
-		$plugin_slug = $wpsc_cf['dirname'];
+		$plugin_slug = $wpsc_st['dirname'];
 
 		if( current_user_can( 'manage_options' ) ) {
 			wp_add_dashboard_widget( 'wpsc_vm_status_widget', __( 'WP e-Commerce Plugins - by Visser Labs', 'wpsc_vm' ), 'wpsc_vm_status_widget' );
@@ -65,9 +65,9 @@ if( !function_exists( 'wpsc_vm_dashboard_setup' ) ) {
 
 	function wpsc_vm_status_widget() {
 
-		global $wpsc_cf;
+		global $wpsc_st;
 
-		$plugin_path = $wpsc_cf['abspath'];
+		$plugin_path = $wpsc_st['abspath'];
 
 		$check = wp_remote_fopen( 'http://www.visser.com.au/?wpsc_vm_data' );
 		if( $check ) {

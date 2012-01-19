@@ -3,180 +3,189 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	/* WordPress Adminstration Menu */
-	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
+	/* WordPress Administration menu */
+	function wpsc_st_add_modules_admin_pages( $page_hooks, $base_page ) {
 
-		$page_hooks[] = add_submenu_page( $base_page, __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 7, 'wpsc_cf', 'wpsc_cf_html_page' );
+		$page_hooks[] = add_submenu_page( $base_page, __( 'Store Toolkit', 'wpsc_st' ), __( 'Store Toolkit', 'wpsc_st' ), 7, 'wpsc_st', 'wpsc_st_html_page' );
 		return $page_hooks;
 
 	}
-	add_filter( 'wpsc_additional_pages', 'wpsc_cf_add_modules_admin_pages', 10, 2 );
+	add_filter( 'wpsc_additional_pages', 'wpsc_st_add_modules_admin_pages', 10, 2 );
 
-	function wpsc_cf_init_meta_box() {
+	function wpsc_st_return_count( $dataset ) {
 
-		$pagename = 'store_page_wpsc-edit-products';
-		add_meta_box( 'wpsc_cf_meta_box', __( 'Custom Fields', 'wpsc_cf' ), 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
+		global $wpdb;
 
-	}
-	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
+		$count_sql = null;
+		switch( $dataset ) {
 
-	function wpsc_cf_add_to_product_form( $order ) {
+			case 'products':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_product_list`";
+				break;
 
-		if( array_search( 'wpsc_cf_meta_box', (array)$order ) === false )
-			$order[] = 'wpsc_cf_meta_box';
-		return $order;
+			case 'variations':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_product_variations`";
+				break;
 
-	}
-	add_filter( 'wpsc_products_page_forms', 'wpsc_cf_add_to_product_form' );
+			case 'images':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_product_images`";
+				break;
 
-	function wpsc_cf_meta_box( $product_data = array() ) {
+			case 'files':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_product_files`";
+				break;
 
-		global $wpdb, $closed_postboxes;
+			case 'tags':
+				$term_taxonomy = 'product_tag';
+				$count_sql = "SELECT COUNT(`term_taxonomy_id`) FROM `" . $wpdb->term_taxonomy . "` WHERE `taxonomy` = '" . $term_taxonomy . "'";
+				break;
 
-		$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) ); ?>
-<div id="wpsc_product_custom_fields" class="postbox <?php echo ( ( array_search('wpsc_cf_meta_box', (array)$product_data['closed_postboxes']) !== false) ? 'closed"' : '' ); ?>" <?php echo ( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['hidden_postboxes'] ) !== false ) ? ' style="display: none;"' : '' ); ?>>
-	<h3 class="hndle"><?php _e( 'Custom Fields', 'wpsc_cf' ); ?></h3>
-	<div class="inside">
-		<div>
-			<p><span class="howto"><?php _e( 'Custom Fields', 'wpsc_cf' ); ?></span></p>
-<?php
-		if( $wpsc_cf_data ) {
-			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
-			$i = 0;
-			foreach( $wpsc_cf_data as $wpsc_cf_field ) { ?>
-			<label><?php echo $wpsc_cf_field['name']; ?>:</label><br />
-<?php
-				switch( $wpsc_cf_field['type'] ) {
+			case 'categories':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_product_categories`";
+				break;
 
-					case 'input':
-						$output = '
-						<input type="text" id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $wpsc_cf_field['slug'] . ']" value="' . get_product_meta( $product_data['id'], $wpsc_cf_field['slug'], true ) . '" size="32" />
-						<span class="howto">' . $wpsc_cf_field['description'] . '</span>';
-						break;
+			case 'orders':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_purchase_logs`";
+				break;
 
-					case 'textarea':
-						$output = '
-<textarea id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $wpsc_cf_field['slug'] . ']" rows="3" cols="30">' . get_product_meta( $product_data['id'], $wpsc_cf_field['slug'], true ) . '</textarea>
-<span class="howto">' . $wpsc_cf_field['description'] . '</span>';
-						break;
+			case 'wishlist':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_wishlist`";
+				break;
 
-					case 'dropdown':
-						$output = '
-<select id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $wpsc_cf_field['slug'] . ']">
-	<option></option>';
-						if( $wpsc_cf_field['options'] ) {
-							$options = explode( '|', $wpsc_cf_field['options'] );
-							foreach( $options as $option )
-								$output .= '
-	<option value="' . $option . '"' . selected( $option, get_product_meta( $product_data['id'], $wpsc_cf_field['slug'], true ), false ) . '>' . $option . '&nbsp;</option>' . "\n";
-						}
-							$output .= '
-</select>
-<span class="howto">' . $wpsc_cf_field['description'] . '</span>';
-						break;
+			case 'enquiries':
+				$post_type = 'wpsc-enquiry';
+				$count = wp_count_posts( $post_type );
+				break;
 
+			case 'credit-cards':
+				$count_sql = "SELECT COUNT(`id`) FROM `" . $wpdb->prefix . "wpsc_creditcard`";
+				break;
+
+			case 'custom-fields':
+				$custom_fields = count( get_option( 'wpsc_cf_data' ) );
+				if( $custom_fields )
+					$count = count( maybe_unserialize( $custom_fields ) );
+				else
+					$count = 0;
+				break;
+
+		}
+		if( isset( $count ) || $count_sql ) {
+			if( isset( $count ) ) {
+				if( is_object( $count ) ) {
+					$count_object = $count;
+					$count = 0;
+					foreach( $count_object as $key => $item )
+						$count = $item + $count;
 				}
-				echo $output; ?>
-			<br />
-<?php
-				$i++;
+				return $count;
+			} else {
+				$count = $wpdb->get_var( $count_sql );
 			}
-		} ?>
-		</div>
-	</div>
-</div>
-<?php
+			return $count;
+		} else {
+			return false;
+		}
+
+	}
+
+	function wpsc_st_clear_dataset( $dataset ) {
+
+		global $wpdb;
+
+		$post_statuses = array(
+			'publish',
+			'pending',
+			'draft',
+			'auto-draft',
+			'future',
+			'private',
+			'inherit',
+			'trash'
+		);
+
+		switch( $dataset ) {
+
+			case 'products':
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_list`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_productmeta`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_order`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_rating`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_item_category_assoc`" );
+				break;
+
+			case 'variations':
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_variations`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_variation_assoc`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_variation_combinations`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_variation_properties`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_variation_values`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_variation_values_assoc`" );
+				break;
+
+			case 'tags':
+				$tags_sql = "SELECT `term_id` FROM `" . $wpdb->term_taxonomy . "` WHERE `taxonomy` = 'product_tag'";
+				$tags = $wpdb->get_results( $tags_sql );
+				if( $tags ) {
+					foreach( $tags as $tag ) {
+						wp_delete_term( $tag->term_id, 'product_tag' );
+						$wpdb->query( "DELETE FROM `" . $wpdb->terms . "` WHERE `term_id` = " . $tag->term_id );
+					}
+				}
+				break;
+
+			case 'categories':
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_categories`" );
+				break;
+
+			case 'images':
+				$upload_dir = wp_upload_dir();
+				wpsc_st_empty_dir( $upload_dir['basedir'] . '/wpsc/product_images' );
+				wpsc_st_empty_dir( $upload_dir['basedir'] . '/wpsc/product_images/thumbnails' ); 
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_images`" );
+				break;
+
+			case 'files':
+				wpsc_st_empty_dir( $upload_dir['basedir'] . '/wpsc/downloadables' );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_product_files`" );
+				break;
+
+			case 'orders':
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_purchase_logs`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_cart_contents`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_submited_form_data`" );
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_download_status`" );
+				break;
+
+			case 'wishlist':
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_wishlist`");
+				break;
+
+			case 'enquiries':
+				$post_type = 'wpsc-enquiry';
+				$enquiries_sql = "SELECT `ID` FROM `" . $wpdb->posts . "` WHERE `post_type` = '" . $post_type . "'";
+				$enquiries = $wpdb->get_results( $enquiries_sql );
+				if( $enquiries ) {
+					foreach( $enquiries as $enquiry ) {
+						if( $enquiry->ID )
+							wp_delete_post( $enquiry->ID );
+					}
+				}
+				break;
+
+			case 'credit-cards':
+				$wpdb->query( "TRUNCATE TABLE `" . $wpdb->prefix . "wpsc_creditcard`");
+				break;
+
+			case 'custom-fields':
+				delete_option( 'wpsc_cf_data' );
+				break;
+
+		}
+
 	}
 
 	/* End of: WordPress Administration */
-
-} else {
-
-	/* Start of: Storefront */
-
-	function wpsc_cf_init() {
-
-		global $wpsc_query;
-
-		$position = get_option( 'wpsc_cf_position' );
-
-		if( $wpsc_query->is_single ) {
-			if( $position <> 'manual' )
-				wpsc_cf_html_product();
-		}
-
-	}
-
-	function wpsc_cf_html_product( $args = null ) {
-
-		global $wpsc_cf, $wpsc_query;
-
-		$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) );
-		if( $wpsc_cf_data ) {
-			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
-
-			if( $args ) {
-				$args_data = explode( '&', $args );
-				$args_filter_data = array();
-				for( $i = 0; $i <= ( count( $args_data ) - 1 ); $i++ ) {
-					$args_filter_data[$i] = explode( '=', $args_data[$i] );
-					if( in_array( 'slug', $args_filter_data[$i] ) ) {
-						$args_filter_value = $args_filter_data[$i][1];
-						foreach( $wpsc_cf_data as $wpsc_cf_field_id => $wpsc_cf_field ) {
-							if( $args_filter_value == $wpsc_cf_field['slug'] ) {
-								$wpsc_cf_data = array();
-								$wpsc_cf_data[] = $wpsc_cf_field;
-							}
-						}
-					}
-				}
-			}
-
-			$layout = get_option( 'wpsc_cf_layout' );
-			$custom_fields = $wpsc_cf_data;
-
-			if( $layout ) {
-				if( file_exists( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout ) )
-					include( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout );
-				else
-					include( $wpsc_cf['abspath'] . '/templates/store/wpsc-single_product_customfields_' . $layout );
-			} else {
-				include( $wpsc_cf['abspath'] . '/templates/store/wpsc-single_product_customfields_table.php' );
-			}
-
-		}
-
-	}
-
-	function wpsc_cf_has_value( $custom_field ) {
-
-		$check = get_product_meta( wpsc_the_product_id(), $custom_field['slug'], true );
-		if( $check )
-			return true;
-
-	}
-
-	function wpsc_cf_value( $custom_field ) {
-
-		$output = '';
-		switch( $custom_field['type'] ) {
-
-			case 'input':
-			case 'dropdown':
-				$output = stripcslashes( $custom_field['prefix'] ) . get_product_meta( wpsc_the_product_id(), $custom_field['slug'], true ) . stripslashes( $custom_field['suffix'] );
-				break;
-
-			case 'textarea':
-				$output = stripcslashes( $custom_field['prefix'] ) . get_product_meta( wpsc_the_product_id(), $custom_field['slug'], true ) . stripslashes( $custom_field['suffix'] );
-				$output = str_replace( "\n", '<br />', $output );
-				break;
-
-		}
-		echo $output;
-
-	}
-
-	/* End of: Storefront */
 
 }
 ?>
