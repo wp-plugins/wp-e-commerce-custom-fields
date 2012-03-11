@@ -4,6 +4,14 @@ if( is_admin() ) {
 	/* Start of: WordPress Administration */
 
 	/* WordPress Adminstration Menu */
+	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
+
+		$page_hooks[] = add_submenu_page( $base_page, __( 'Custom Fields', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 7, 'wpsc_cf', 'wpsc_cf_html_page' );
+		return $page_hooks;
+
+	}
+	add_filter( 'wpsc_additional_pages', 'wpsc_cf_add_modules_admin_pages', 10, 2 );
+
 	function wpsc_cf_admin_menu() {
 
 		add_options_page( __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
