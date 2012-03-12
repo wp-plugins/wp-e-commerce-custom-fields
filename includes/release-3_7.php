@@ -6,7 +6,9 @@ if( is_admin() ) {
 	/* WordPress Adminstration Menu */
 	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
 
-		$page_hooks[] = add_submenu_page( $base_page, __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 7, 'wpsc_cf', 'wpsc_cf_html_page' );
+		global $wpsc_cf;
+
+		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], $wpsc_cf['menu'], 7, 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
 
 	}
@@ -14,8 +16,10 @@ if( is_admin() ) {
 
 	function wpsc_cf_init_meta_box() {
 
+		global $wpsc_cf;
+
 		$pagename = 'store_page_wpsc-edit-products';
-		add_meta_box( 'wpsc_cf_meta_box', __( 'Custom Fields', 'wpsc_cf' ), 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
+		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['name'], 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
 
 	}
 	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
@@ -31,14 +35,14 @@ if( is_admin() ) {
 
 	function wpsc_cf_meta_box( $product_data = array() ) {
 
-		global $wpdb, $closed_postboxes;
+		global $wpdb, $wpsc_cf, $closed_postboxes;
 
-		$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) ); ?>
-<div id="wpsc_product_custom_fields" class="postbox <?php echo ( ( array_search('wpsc_cf_meta_box', (array)$product_data['closed_postboxes']) !== false) ? 'closed"' : '' ); ?>" <?php echo ( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['hidden_postboxes'] ) !== false ) ? ' style="display: none;"' : '' ); ?>>
-	<h3 class="hndle"><?php _e( 'Custom Fields', 'wpsc_cf' ); ?></h3>
+		$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) ); ?>
+<div id="wpsc_product_custom_fields" class="postbox <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['closed_postboxes'] ) !== false) ? 'closed"' : '' ); ?>" <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['hidden_postboxes'] ) !== false ) ? ' style="display: none;"' : '' ); ?>>
+	<h3 class="hndle"><?php echo $wpsc_cf['name']; ?></h3>
 	<div class="inside">
 		<div>
-			<p><span class="howto"><?php _e( 'Custom Fields', 'wpsc_cf' ); ?></span></p>
+			<p><span class="howto"><?php echo $wpsc_cf['name']; ?></span></p>
 <?php
 		if( $wpsc_cf_data ) {
 			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
@@ -96,9 +100,9 @@ if( is_admin() ) {
 
 	function wpsc_cf_init() {
 
-		global $wpsc_query;
+		global $wpsc_query, $wpsc_cf;
 
-		$position = get_option( 'wpsc_cf_position' );
+		$position = get_option( $wpsc_cf['prefix'] . '_position' );
 
 		if( $wpsc_query->is_single ) {
 			if( $position <> 'manual' )
@@ -111,7 +115,7 @@ if( is_admin() ) {
 
 		global $wpsc_cf, $wpsc_query;
 
-		$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) );
+		$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 		if( $wpsc_cf_data ) {
 			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
 
@@ -132,7 +136,7 @@ if( is_admin() ) {
 				}
 			}
 
-			$layout = get_option( 'wpsc_cf_layout' );
+			$layout = get_option( $wpsc_cf['prefix'] . '_layout' );
 			$custom_fields = $wpsc_cf_data;
 
 			if( $layout ) {

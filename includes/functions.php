@@ -85,7 +85,6 @@ if( is_admin() ) {
 function wpsc_cf_custom_field_sort( $array, $key ) {
 
 	$sort = array();
-
 	$ret = array();
 	reset( $array );
 	foreach( $array as $ii => $va )

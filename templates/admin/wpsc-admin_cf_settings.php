@@ -1,4 +1,4 @@
-<h3><?php _e( 'Manage Fields', 'wpsc_cf' ); ?></h3>
+<h3><?php _e( 'Manage Attributes', 'wpsc_cf' ); ?></h3>
 <table class="widefat">
 	<thead>
 		<tr>
@@ -34,7 +34,7 @@ if( $wpsc_cf_data ) {
 if( $i == 0 ) { ?>
 		<tr>
 			<td colspan="3">
-				<?php _e( 'No Custom Fields have been created.', 'wpsc_cf' ); ?>
+				<?php _e( 'No Attributes have been created.', 'wpsc_cf' ); ?>
 			</td>
 		</tr>
 <?php
@@ -56,7 +56,7 @@ $output = '';
 for( $i = 0; $i < count( $positions ); $i++ )
 	$output .= '<option value="' . $positions[$i][0] . '"' . selected( $positions[$i][0], $position, false ) . '>' . $positions[$i][1] . '&nbsp;</option>' . "\n";
 echo $output; ?>
-				</select> <span class="description"><?php _e( 'The placement of Custom Fields within the Product details template.', 'wpsc_cf' ); ?></span>
+				</select> <span class="description"><?php _e( 'The placement of Attributes within the Product details template.', 'wpsc_cf' ); ?></span>
 			</td>
 		</tr>
 
@@ -79,7 +79,7 @@ foreach( $layouts as $layout )
 	$output .= '<option value="' . $layout[0] . '"' . selected( $layout[0], get_option( 'wpsc_cf_layout' ), false ) . '>' . $layout[1] . '&nbsp;</option>' . "\n";
 echo $output; ?>
 				</select>
-				<span class="description"><?php _e( 'The layout of Custom Fields within the Product details template.', 'wpsc_cf' ); ?></span>
+				<span class="description"><?php _e( 'The layout of Attributes within the Product details template.', 'wpsc_cf' ); ?></span>
 			</td>
 		</tr>
 
@@ -87,8 +87,8 @@ echo $output; ?>
 			<th scope="row"><label><?php _e( 'Header Visibility', 'wpsc_cf' ); ?>:</label></th>
 			<td>
 				<fieldset>
-					<label><input type="radio" name="display_title" value="1"<?php checked( get_option( 'wpsc_cf_display_title' ), 1 ); ?> /> <?php _e( 'I would like to display the Custom Fields header', 'wpsc_cf' ); ?></label><br />
-					<label><input type="radio" name="display_title" value="0"<?php checked( get_option( 'wpsc_cf_display_title' ), 0 ); ?> /> <?php _e( 'I would like to hide the Custom Fields header', 'wpsc_cf' ); ?></label>
+					<label><input type="radio" name="display_title" value="1"<?php checked( get_option( 'wpsc_cf_display_title' ), 1 ); ?> /> <?php _e( 'I would like to display the Attributes header', 'wpsc_cf' ); ?></label><br />
+					<label><input type="radio" name="display_title" value="0"<?php checked( get_option( 'wpsc_cf_display_title' ), 0 ); ?> /> <?php _e( 'I would like to hide the Attributes header', 'wpsc_cf' ); ?></label>
 				</fieldset>
 				<p class="description"><?php _e( 'Show or hide the Related Products header.', 'wpsc_cf' ); ?></p>
 			</td>
@@ -98,7 +98,7 @@ echo $output; ?>
 			<th scope="row"><label><?php _e( 'Header Title', 'wpsc_cf' ); ?>:</label></th>
 			<td>
 				<input type="text" name="title_text" value="<?php echo get_option( 'wpsc_cf_title_text' ); ?>" size="10" class="regular-text" />
-				<span class="description"><?php _e( 'The header text for Custom Fields.', 'wpsc_cf' ); ?></span>
+				<span class="description"><?php _e( 'The header text for Attributes.', 'wpsc_cf' ); ?></span>
 			</td>
 		</tr>
 

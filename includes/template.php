@@ -5,7 +5,9 @@ if( !is_admin() ) {
 
 	function wpsc_the_custom_fields( $args = null ) {
 
-		$position = get_option( 'wpsc_cf_position' );
+		global $wpsc_cf;
+
+		$position = get_option( $wpsc_cf['prefix'] . '_position' );
 		if( $args )
 			wpsc_cf_get_value( $args );
 		else if( $position == 'manual' )
@@ -15,15 +17,19 @@ if( !is_admin() ) {
 
 	function wpsc_cf_show_title() {
 
-		$display_title = get_option( 'wpsc_cf_display_title' );
+		global $wpsc_cf;
+
+		$display_title = get_option( $wpsc_cf['prefix'] . '_display_title' );
 		return $display_title;
 
 	}
 
 	function wpsc_cf_title() {
 
+		global $wpsc_cf;
+
 		$output = '';
-		$output = get_option( 'wpsc_cf_title_text' );
+		$output = get_option( $wpsc_cf['prefix'] . '_title_text' );
 		if( $output )
 			echo $output;
 
@@ -31,8 +37,10 @@ if( !is_admin() ) {
 
 	function wpsc_cf_get_title() {
 
+		global $wpsc_cf;
+
 		$output = '';
-		$output = get_option( 'wpsc_cf_title_text' );
+		$output = get_option( $wpsc_cf['prefix'] . '_title_text' );
 		if( $output )
 			return $output;
 
@@ -50,7 +58,6 @@ if( !is_admin() ) {
 	function wpsc_cf_get_label( $custom_field ) {
 
 		$output = '';
-
 		$output = $custom_field['name'];
 		if( $output )
 			return $output;
@@ -58,6 +65,8 @@ if( !is_admin() ) {
 	}
 
 	function wpsc_cf_get_value( $args = null ) {
+
+		global $wpsc_cf;
 
 		if( $args ) {
 			$defaults = array(
@@ -69,7 +78,7 @@ if( !is_admin() ) {
 				switch( $key ) {
 
 					case 'slug':
-						$data = unserialize( get_option( 'wpsc_cf_data' ) );
+						$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 						if( $data ) {
 							foreach( $data as $key => $item ) {
 								if( $item['slug'] == $args['slug'] ) {

@@ -4,7 +4,7 @@ Contributors: visser, Ryan Waggoner
 Donate link: http://www.visser.com.au/#donations
 Tags: wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
-Tested up to: 3.3
+Tested up to: 3.3.1
 Stable tag: 1.4.3
 
 == Description ==

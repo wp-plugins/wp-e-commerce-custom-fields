@@ -35,12 +35,13 @@ $wpsc_cf = array(
 	'filename' => basename( __FILE__ ),
 	'dirname' => basename( dirname( __FILE__ ) ),
 	'abspath' => dirname( __FILE__ ),
-	'relpath' => basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ )
+	'relpath' => basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ),
+	'prefix_separator' => '_'
 );
 
 $wpsc_cf['prefix'] = 'wpsc_cf';
 $wpsc_cf['name'] = __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' );
-$wpsc_cf['menu'] = __( 'Custom Fields', 'wpsc_cf' );
+$wpsc_cf['menu'] = __( 'Attributes', 'wpsc_cf' );
 
 if( is_admin() ) {
 
@@ -65,10 +66,10 @@ if( is_admin() ) {
 				$display_title = $_POST['display_title'];
 				$title_text = $_POST['title_text'];
 
-				update_option( 'wpsc_cf_position', $position );
-				update_option( 'wpsc_cf_layout', $layout );
-				update_option( 'wpsc_cf_display_title', $display_title );
-				update_option( 'wpsc_cf_title_text', $title_text );
+				update_option( $wpsc_cf['prefix'] . '_position', $position );
+				update_option( $wpsc_cf['prefix'] . '_layout', $layout );
+				update_option( $wpsc_cf['prefix'] . '_display_title', $display_title );
+				update_option( $wpsc_cf['prefix'] . '_title_text', $title_text );
 
 				$message = __( 'Settings updated', 'wpsc_cf' );
 				$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
@@ -79,14 +80,14 @@ if( is_admin() ) {
 
 			case 'delete':
 				$id = $_GET['id'];
-				$data = unserialize( get_option( 'wpsc_cf_data' ) );
+				$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 				unset( $data[$id] );
 				$data = serialize( $data );
 
-				update_option( 'wpsc_cf_data', $data );
+				update_option( $wpsc_cf['prefix'] . '_data', $data );
 				unset( $data );
 
-				$message = __( 'Custom field deleted', 'wpsc_cf' );
+				$message = __( 'Attribute deleted', 'wpsc_cf' );
 				$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
 				echo $output;
 
@@ -117,7 +118,7 @@ if( is_admin() ) {
 						'suffix' => $suffix,
 						'show_name' => $show_name
 					);
-					$data = unserialize( get_option( 'wpsc_cf_data' ) );
+					$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 					$data[$id]['name'] = $name;
 					$data[$id]['slug'] = $slug;
 					$data[$id]['type'] = $type;
@@ -130,10 +131,10 @@ if( is_admin() ) {
 					$data[$id]['description'] = $description;
 					$data = serialize( $data );
 
-					update_option( 'wpsc_cf_data', $data );
+					update_option( $wpsc_cf['prefix'] . '_data', $data );
 					unset( $data );
 
-					$message = __( 'Custom field updated', 'wpsc_cf' );
+					$message = __( 'Attribute updated', 'wpsc_cf' );
 					$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
 				} else {
 					$message = '<strong>' . __( 'ERROR', 'wpsc_cf' ) . '</strong>: ' . __( 'A required field was not filled. Please ensure required fields are filled.', 'wpsc_cf' );
@@ -159,8 +160,8 @@ if( is_admin() ) {
 						$wpsc_cf_slug = strtolower( str_replace( ' ', '-', $wpsc_cf_slug ) );
 					}
 					$wpsc_cf_description = $_POST['custom-field-description'];
-					if( get_option( 'wpsc_cf_data' ) ) {
-						$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) );
+					if( get_option( $wpsc_cf['prefix'] . '_data' ) ) {
+						$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 						$wpsc_cf_field = array(
 							'name' => $wpsc_cf_name, 
 							'slug' => $wpsc_cf_slug, 
@@ -173,7 +174,7 @@ if( is_admin() ) {
 						);
 						$wpsc_cf_data[] = $wpsc_cf_field;
 						$wpsc_cf_data = serialize( $wpsc_cf_data );
-						update_option( 'wpsc_cf_data', $wpsc_cf_data );
+						update_option( $wpsc_cf['prefix'] . '_data', $wpsc_cf_data );
 					} else {
 						$wpsc_cf_data = array();
 						$wpsc_cf_data[] = array(
@@ -187,22 +188,22 @@ if( is_admin() ) {
 							'show_name' => $wpsc_cf_show_name
 						);
 						$wpsc_cf_data = serialize( $wpsc_cf_data );
-						update_option( 'wpsc_cf_data', $wpsc_cf_data );
+						update_option( $wpsc_cf['prefix'] . '_data', $wpsc_cf_data );
 					}
 					unset( $wpsc_cf_data );
 
 					if( $wpsc_cf_type == 'dropdown' ) {
-						$message = __( 'Custom field saved, you\'ll now need to define the Options for this field', 'wpsc_cf' );
-						$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
+						$message = __( 'Attribute saved, you\'ll now need to define the Options for this field', 'wpsc_cf' );
 					} else {
-						$message = __( 'Custom field saved', 'wpsc_cf' );
-						$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
+						$message = __( 'Attribute saved', 'wpsc_cf' );
 					}
+					$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
 				} else {
 					$message = '<strong>' . __( 'ERROR', 'wpsc_cf' ) . '</strong>: ' . __( 'A required field was not filled. Please ensure required fields are filled.', 'wpsc_cf' ) . '.</strong>';
 					$output = '<div class="error settings-error"><p>' . $message . '</p></div>';
 				}
 				echo $output;
+
 				wpsc_cf_manage_form();
 				break;
 
@@ -210,14 +211,14 @@ if( is_admin() ) {
 			case 'new':
 				if( $action == 'edit' ) {
 					$wpsc_cf_id = $_GET['id'];
-					$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) );
+					$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 					$wpsc_cf_field = $wpsc_cf_data[$wpsc_cf_id];
 				}
 
 				if( $action == 'edit' )
-					$title = __( 'Edit Custom Field', 'wpsc_cf' );
+					$title = __( 'Edit Attribute', 'wpsc_cf' );
 				else
-					$title = __( 'Add New Custom Field', 'wpsc_cf' );
+					$title = __( 'Add New Attribute', 'wpsc_cf' );
 				$options = wpsc_cf_custom_field_types();
 
 				include( 'templates/admin/wpsc-admin_cf_settings_detail.php' );
@@ -235,6 +236,8 @@ if( is_admin() ) {
 
 	function wpsc_cf_manage_form() {
 
+		global $wpsc_cf;
+
 		$positions = wpsc_productpage_positions();
 
 		$layouts = array();
@@ -242,7 +245,7 @@ if( is_admin() ) {
 		$layouts[] = array( 'list-ordered.php', __( 'List - Ordered', 'wpsc_cf' ) );
 		$layouts[] = array( 'list-unordered.php', __( 'List - Unordered', 'wpsc_cf' ) );
 
-		$wpsc_cf_data = get_option( 'wpsc_cf_data' );
+		$wpsc_cf_data = get_option( $wpsc_cf['prefix'] . '_data' );
 		if( $wpsc_cf_data ) {
 			if( wpsc_cf_is_serialized( $wpsc_cf_data ) )
 				$wpsc_cf_data = unserialize( $wpsc_cf_data );
@@ -262,7 +265,7 @@ if( is_admin() ) {
 	include_once( 'includes/template.php' );
 	include_once( 'includes/legacy.php' );
 
-	$position = get_option( 'wpsc_cf_position' );
+	$position = get_option( $wpsc_cf['prefix'] . '_position' );
 
 	if( $position )
 		add_action( $position, 'wpsc_cf_init' );

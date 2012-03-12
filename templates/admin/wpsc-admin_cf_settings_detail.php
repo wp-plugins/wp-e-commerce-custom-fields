@@ -67,7 +67,7 @@
 
 <?php if( $action == 'new' ) { ?>
 					<p class="submit">
-						<input type="submit" id="submit" value="<?php _e( 'Add New Custom Field', 'wpsc_cf' ); ?>" class="button" />
+						<input type="submit" id="submit" value="<?php _e( 'Add New Attribute', 'wpsc_cf' ); ?>" class="button" />
 					</p>
 					<input type="hidden" name="action" value="new-confirm" />
 <?php } else { ?>

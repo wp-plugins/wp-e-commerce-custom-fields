@@ -6,23 +6,20 @@ if( is_admin() ) {
 	/* WordPress Adminstration Menu */
 	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
 
-		$page_hooks[] = add_submenu_page( $base_page, __( 'Custom Fields', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 7, 'wpsc_cf', 'wpsc_cf_html_page' );
+		global $wpsc_cf;
+
+		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], $wpsc_cf['menu'], 7, 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
 
 	}
 	add_filter( 'wpsc_additional_pages', 'wpsc_cf_add_modules_admin_pages', 10, 2 );
 
-	function wpsc_cf_admin_menu() {
-
-		add_options_page( __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
-
-	}
-	add_action( 'admin_menu', 'wpsc_cf_admin_menu' );
-
 	function wpsc_cf_init_meta_box() {
 
+		global $wpsc_cf;
+
 		$pagename = 'wpsc-product';
-		add_meta_box( 'wpsc_cf_meta_box', __( 'Custom Fields', 'wpsc_cf' ), 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
+		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['name'], 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
 
 	}
 	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
@@ -46,7 +43,7 @@ if( is_admin() ) {
 			$product_data['meta'][$meta_key] = $meta_value[0];
 		$product_meta = maybe_unserialize( $product_data['_wpsc_product_metadata'][0] );
 
-		$wpsc_cf_data = unserialize( get_option( 'wpsc_cf_data' ) );
+		$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 		if( $wpsc_cf_data ) {
 			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
 			$i = 0;
@@ -116,9 +113,9 @@ if( is_admin() ) {
 
 	function wpsc_cf_init() {
 
-		global $wp_query;
+		global $wp_query, $wpsc_cf;
 
-		$position = get_option( 'wpsc_cf_position' );
+		$position = get_option( $wpsc_cf['prefix'] . '_position' );
 
 		if( $wp_query->is_single ) {
 			if( $position <> 'manual' )
@@ -131,11 +128,11 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		$data = unserialize( get_option( 'wpsc_cf_data' ) );
+		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 			$custom_fields = $data;
-			$layout = get_option( 'wpsc_cf_layout' );
+			$layout = get_option( $wpsc_cf['prefix'] . '_layout' );
 			if( $layout ) {
 				if( file_exists( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout ) )
 					include( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout );
