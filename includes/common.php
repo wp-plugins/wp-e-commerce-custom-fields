@@ -4,7 +4,6 @@
 Filename: common.php
 Description: common.php loads commonly accessed functions across the Visser Labs suite.
 
-- wpsc_vl_plugin_update_prepare
 - wpsc_vl_migrate_prefix_options
 - wpsc_productpage_positions
 
@@ -17,28 +16,7 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	include_once( 'common-update.php' );
 	include_once( 'common-dashboard_widgets.php' );
-
-	if( !function_exists( 'wpsc_vl_plugin_update_prepare' ) ) {
-
-		function wpsc_vl_plugin_update_prepare( $action, $args ) {
-
-			global $wp_version;
-
-			return array(
-				'body' => array(
-					'action' => $action,
-					'request' => serialize( $args ),
-					'api-key' => md5( get_bloginfo( 'url' ) ),
-					'site' => get_bloginfo( 'url' )
-				),
-				'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' )
-			);	
-
-		}
-
-	}
 
 	if( !function_exists( 'wpsc_vl_migrate_prefix_options' ) ) {
 
