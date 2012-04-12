@@ -11,21 +11,21 @@
 	</thead>
 	<tbody>
 <?php
-if( $wpsc_cf_data ) {
+if( $data ) {
 	$i = 0;
-	foreach( $wpsc_cf_data as $wpsc_cf_id => $wpsc_cf_field ) { ?>
-		<tr id="custom-field-<?php echo $wpsc_cf_id; ?>">
+	foreach( $data as $id => $field ) { ?>
+		<tr id="custom-field-<?php echo $id; ?>">
 			<td class="name column-name">
-				<a href="admin.php?page=wpsc_cf&action=edit&id=<?php echo $wpsc_cf_id; ?>" class="row-title"><strong><?php echo $wpsc_cf_field['name']; ?></strong></a>
+				<a href="admin.php?page=wpsc_cf&action=edit&id=<?php echo $id; ?>" class="row-title"><strong><?php echo $field['name']; ?></strong></a>
 				<div class="row-actions">
-					<span class="edit"><a href="admin.php?page=wpsc_cf&action=edit&id=<?php echo $wpsc_cf_id; ?>"><?php _e( 'Edit', 'wpsc_cf' ); ?></a></span> | 
-					<span class="submitdelete"><a href="admin.php?page=wpsc_cf&action=delete&id=<?php echo $wpsc_cf_id; ?>"><?php _e( 'Delete', 'wpsc_cf' ); ?></a></span>
+					<span class="edit"><a href="admin.php?page=wpsc_cf&action=edit&id=<?php echo $id; ?>"><?php _e( 'Edit', 'wpsc_cf' ); ?></a></span> | 
+					<span class="submitdelete"><a href="admin.php?page=wpsc_cf&action=delete&id=<?php echo $id; ?>"><?php _e( 'Delete', 'wpsc_cf' ); ?></a></span>
 				</div>
 			</td>
-			<td class="name column-name"><?php echo wpsc_cf_return_type_label( $wpsc_cf_field['type'] ); ?></td>
-			<td class="name column-name"><?php echo $wpsc_cf_field['slug']; ?></td>
-			<td class="name column-name"><?php echo $wpsc_cf_field['description']; ?></td>
-			<td class="name column-name"><?php echo stripslashes( $wpsc_cf_field['prefix'] ) . '[value]' . stripslashes( $wpsc_cf_field['suffix'] ); ?></td>
+			<td class="name column-name"><?php echo wpsc_cf_return_type_label( $field['type'] ); ?></td>
+			<td class="name column-name"><?php echo $field['slug']; ?></td>
+			<td class="name column-name"><?php echo $field['description']; ?></td>
+			<td class="name column-name"><?php echo stripslashes( $field['prefix'] ) . '[value]' . stripslashes( $field['suffix'] ); ?></td>
 		</tr>
 <?php
 		$i++;
@@ -64,7 +64,7 @@ echo $output; ?>
 	<p><?php _e( 'For manual positioning use the following PHP template tag within the Single Product template', 'wpsc_cf' ); ?>.</p>
 	<p><code><?php echo htmlentities2( '<?php if( function_exists( \'wpsc_the_custom_fields\' ) ) wpsc_the_custom_fields(); ?>' ); ?></code></p>
 	<p><?php _e( 'To display individual custom fields use the following PHP template tag with the \'slug\' property', 'wpsc_cf' ); ?>.</p>
-	<p><code><?php echo htmlentities2( '<?php if( function_exists( \'wpsc_the_custom_fields\' ) ) wpsc_the_custom_fields( \'slug=' . $wpsc_cf_field['slug'] . '\' ); ?>' ); ?></code></p>
+	<p><code><?php echo htmlentities2( '<?php if( function_exists( \'wpsc_the_custom_fields\' ) ) wpsc_the_custom_fields( \'slug=' . $field['slug'] . '\' ); ?>' ); ?></code></p>
 
 	<h3><?php _e( 'Presentation', 'wpsc_cf' ); ?></h3>
 	<table class="form-table">
@@ -76,7 +76,7 @@ echo $output; ?>
 <?php
 $output = '';
 foreach( $layouts as $layout )
-	$output .= '<option value="' . $layout[0] . '"' . selected( $layout[0], get_option( 'wpsc_cf_layout' ), false ) . '>' . $layout[1] . '&nbsp;</option>' . "\n";
+	$output .= '<option value="' . $layout[0] . '"' . selected( $layout[0], get_option( $wpsc_cf['prefix'] . '_layout' ), false ) . '>' . $layout[1] . '&nbsp;</option>' . "\n";
 echo $output; ?>
 				</select>
 				<span class="description"><?php _e( 'The layout of Attributes within the Product details template.', 'wpsc_cf' ); ?></span>
@@ -87,8 +87,8 @@ echo $output; ?>
 			<th scope="row"><label><?php _e( 'Header Visibility', 'wpsc_cf' ); ?>:</label></th>
 			<td>
 				<fieldset>
-					<label><input type="radio" name="display_title" value="1"<?php checked( get_option( 'wpsc_cf_display_title' ), 1 ); ?> /> <?php _e( 'I would like to display the Attributes header', 'wpsc_cf' ); ?></label><br />
-					<label><input type="radio" name="display_title" value="0"<?php checked( get_option( 'wpsc_cf_display_title' ), 0 ); ?> /> <?php _e( 'I would like to hide the Attributes header', 'wpsc_cf' ); ?></label>
+					<label><input type="radio" name="display_title" value="1"<?php checked( get_option( $wpsc_cf['prefix'] . '_display_title' ), 1 ); ?> /> <?php _e( 'I would like to display the Attributes header', 'wpsc_cf' ); ?></label><br />
+					<label><input type="radio" name="display_title" value="0"<?php checked( get_option( $wpsc_cf['prefix'] . '_display_title' ), 0 ); ?> /> <?php _e( 'I would like to hide the Attributes header', 'wpsc_cf' ); ?></label>
 				</fieldset>
 				<p class="description"><?php _e( 'Show or hide the Related Products header.', 'wpsc_cf' ); ?></p>
 			</td>
@@ -97,7 +97,7 @@ echo $output; ?>
 		<tr>
 			<th scope="row"><label><?php _e( 'Header Title', 'wpsc_cf' ); ?>:</label></th>
 			<td>
-				<input type="text" name="title_text" value="<?php echo get_option( 'wpsc_cf_title_text' ); ?>" size="10" class="regular-text" />
+				<input type="text" name="title_text" value="<?php echo get_option( $wpsc_cf['prefix'] . '_title_text' ); ?>" size="10" class="regular-text" />
 				<span class="description"><?php _e( 'The header text for Attributes.', 'wpsc_cf' ); ?></span>
 			</td>
 		</tr>

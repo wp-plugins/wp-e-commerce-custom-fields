@@ -3,7 +3,7 @@
 Plugin Name: WP e-Commerce - Custom Fields
 Plugin URI: http://www.visser.com.au/wp-ecommerce/plugins/custom-fields/
 Description: Add and manage custom Product meta details within WP e-Commerce.
-Version: 1.4.3
+Version: 1.4.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 Contributor: Ryan Waggoner
@@ -126,7 +126,7 @@ if( is_admin() ) {
 					$data[$id]['prefix'] = $prefix;
 					$data[$id]['suffix'] = $suffix;
 					$data[$id]['show_name'] = $show_name;
-					if( $type == 'dropdown' )
+					if( $type == 'dropdown' || $type == 'checkbox' || $type == 'radio' )
 						$data[$id]['options'] = $options;
 					$data[$id]['description'] = $description;
 					$data = serialize( $data );
@@ -146,57 +146,56 @@ if( is_admin() ) {
 				break;
 
 			case 'new-confirm':
-				$wpsc_cf_name = $_POST['custom-field-name'];
-				$wpsc_cf_slug = $_POST['custom-field-slug'];
-				$wpsc_cf_type = $_POST['custom-field-type'];
-				$wpsc_cf_order = $_POST['custom-field-order'];
-				$wpsc_cf_prefix = $_POST['custom-field-prefix'];
-				$wpsc_cf_suffix = $_POST['custom-field-suffix'];
-				$wpsc_cf_show_name = $_POST['custom-field-show-name'];
-				if( $wpsc_cf_name && $wpsc_cf_type ) {
-					if( !$wpsc_cf_slug ) {
+				$name = $_POST['custom-field-name'];
+				$slug = $_POST['custom-field-slug'];
+				$type = $_POST['custom-field-type'];
+				$order = $_POST['custom-field-order'];
+				$prefix = $_POST['custom-field-prefix'];
+				$suffix = $_POST['custom-field-suffix'];
+				$show_name = $_POST['custom-field-show-name'];
+				if( $name && $type ) {
+					if( !$slug ) {
 						$slug_filters = array( '(', ')' );
-						$wpsc_cf_slug = str_replace( $slug_filters, '', $wpsc_cf_name );
-						$wpsc_cf_slug = strtolower( str_replace( ' ', '-', $wpsc_cf_slug ) );
+						$slug = str_replace( $slug_filters, '', $name );
+						$slug = strtolower( str_replace( ' ', '-', $slug ) );
 					}
-					$wpsc_cf_description = $_POST['custom-field-description'];
+					$description = $_POST['custom-field-description'];
 					if( get_option( $wpsc_cf['prefix'] . '_data' ) ) {
-						$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
-						$wpsc_cf_field = array(
-							'name' => $wpsc_cf_name, 
-							'slug' => $wpsc_cf_slug, 
-							'type' => $wpsc_cf_type, 
-							'order' => $wpsc_cf_order, 
-							'description' => $wpsc_cf_description,
-							'prefix' => $wpsc_cf_prefix,
-							'suffix' => $wpsc_cf_suffix,
-							'show_name' => $wpsc_cf_show_name
+						$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+						$field = array(
+							'name' => $name, 
+							'slug' => $slug, 
+							'type' => $type, 
+							'order' => $order, 
+							'description' => $description,
+							'prefix' => $prefix,
+							'suffix' => $suffix,
+							'show_name' => $show_name
 						);
-						$wpsc_cf_data[] = $wpsc_cf_field;
-						$wpsc_cf_data = serialize( $wpsc_cf_data );
-						update_option( $wpsc_cf['prefix'] . '_data', $wpsc_cf_data );
+						$data[] = $field;
+						$data = serialize( $data );
+						update_option( $wpsc_cf['prefix'] . '_data', $data );
 					} else {
-						$wpsc_cf_data = array();
-						$wpsc_cf_data[] = array(
-							'name' => $wpsc_cf_name, 
-							'slug' => $wpsc_cf_slug, 
-							'type' => $wpsc_cf_type, 
-							'order' => $wpsc_cf_order, 
-							'description' => $wpsc_cf_description,
-							'prefix' => $wpsc_cf_prefix,
-							'suffix' => $wpsc_cf_suffix,
-							'show_name' => $wpsc_cf_show_name
+						$data = array();
+						$data[] = array(
+							'name' => $name, 
+							'slug' => $slug, 
+							'type' => $type, 
+							'order' => $order, 
+							'description' => $description,
+							'prefix' => $prefix,
+							'suffix' => $suffix,
+							'show_name' => $show_name
 						);
-						$wpsc_cf_data = serialize( $wpsc_cf_data );
-						update_option( $wpsc_cf['prefix'] . '_data', $wpsc_cf_data );
+						$data = serialize( $data );
+						update_option( $wpsc_cf['prefix'] . '_data', $data );
 					}
-					unset( $wpsc_cf_data );
+					unset( $data );
 
-					if( $wpsc_cf_type == 'dropdown' ) {
+					if( $type == 'dropdown' || $type == 'checkbox' || $type == 'radio' )
 						$message = __( 'Attribute saved, you\'ll now need to define the Options for this field', 'wpsc_cf' );
-					} else {
+					else
 						$message = __( 'Attribute saved', 'wpsc_cf' );
-					}
 					$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
 				} else {
 					$message = '<strong>' . __( 'ERROR', 'wpsc_cf' ) . '</strong>: ' . __( 'A required field was not filled. Please ensure required fields are filled.', 'wpsc_cf' ) . '.</strong>';
@@ -210,9 +209,9 @@ if( is_admin() ) {
 			case 'edit':
 			case 'new':
 				if( $action == 'edit' ) {
-					$wpsc_cf_id = $_GET['id'];
-					$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
-					$wpsc_cf_field = $wpsc_cf_data[$wpsc_cf_id];
+					$id = $_GET['id'];
+					$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+					$field = $data[$id];
 				}
 
 				if( $action == 'edit' )
@@ -245,11 +244,11 @@ if( is_admin() ) {
 		$layouts[] = array( 'list-ordered.php', __( 'List - Ordered', 'wpsc_cf' ) );
 		$layouts[] = array( 'list-unordered.php', __( 'List - Unordered', 'wpsc_cf' ) );
 
-		$wpsc_cf_data = get_option( $wpsc_cf['prefix'] . '_data' );
-		if( $wpsc_cf_data ) {
-			if( wpsc_cf_is_serialized( $wpsc_cf_data ) )
-				$wpsc_cf_data = unserialize( $wpsc_cf_data );
-			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
+		$data = get_option( $wpsc_cf['prefix'] . '_data' );
+		if( $data ) {
+			if( wpsc_cf_is_serialized( $data ) )
+				$data = unserialize( $data );
+			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 		}
 
 		include( 'templates/admin/wpsc-admin_cf_settings.php' );

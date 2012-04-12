@@ -21,7 +21,8 @@ if( is_admin() ) {
 
 	function wpsc_cf_check_options_exist() {
 
-		$sample = get_option( 'vl_wpsccf_data' );
+		$prefix = 'vl_wpsccf';
+		$sample = get_option( $prefix . '_data' );
 		if( $sample )
 			return true;
 
@@ -35,11 +36,7 @@ if( is_admin() ) {
 
 	function wpsc_cf_return_type_label( $type ) {
 
-		$options = array();
-		$options[] = array( 'name' => 'input', 'label' => 'Input' );
-		$options[] = array( 'name' => 'textarea', 'label' => 'Textarea' );
-		$options[] = array( 'name' => 'dropdown', 'label' => 'Dropdown' );
-		$options[] = array( 'name' => 'wysiwyg', 'label' => 'Textarea (with Editor)' );
+		$options = wpsc_cf_custom_field_types();
 
 		foreach( $options as $option ) {
 			if( $option['name'] == $type ) {
@@ -58,10 +55,81 @@ if( is_admin() ) {
 		$options[] = array( 'name' => 'textarea', 'label' => 'Textarea' );
 		$options[] = array( 'name' => 'dropdown', 'label' => 'Dropdown' );
 		$options[] = array( 'name' => 'wysiwyg', 'label' => 'Textarea (with Editor)' );
+		$options[] = array( 'name' => 'checkbox', 'label' => 'Checkbox List' );
+		$options[] = array( 'name' => 'radio', 'label' => 'Radio List' );
 
 		return $options;
 
 	}
+
+	function wpsc_cf_pd_create_product_addons( $import, $product ) {
+
+		if( $import->custom_options ) {
+			foreach( $import->custom_options as $custom_option ) {
+				if( $product->custom_fields[$custom_option['slug']] ) {
+					switch( wpsc_get_major_version() ) {
+
+						case '3.7':
+							$wpdb->insert( $wpdb->prefix . 'wpsc_productmeta', array( 
+								'product_id' => $product->ID,
+								'meta_key' => $custom_option['slug'],
+								'meta_value' => $product->custom_fields[$custom_option['slug']]
+							) );
+							break;
+
+						case '3.8':
+							update_product_meta( $product->ID, $custom_option['slug'], $product->custom_fields[$custom_option['slug']] );
+							break;
+
+					}
+				}
+			}
+		}
+		return $product;
+
+	}
+	add_filter( 'wpsc_pd_create_product_addons', 'wpsc_cf_pd_create_product_addons', null, 2 );
+
+	function wpsc_cf_pd_merge_product_data_addons( $import, $product, $product_data ) {
+
+		if( $product->ID ) {
+			if( $import->custom_options ) {
+				$custom_fields = array();
+				foreach( $import->custom_options as $custom_option )
+					$custom_fields[$custom_option['slug']] = get_product_meta( $product->ID, $custom_option['slug'], true );
+				$product_data->custom_fields = $custom_fields;
+			}
+		}
+		return $product_data;
+
+	}
+	add_filter( 'wpsc_pd_merge_product_data_addons', 'wpsc_cf_pd_merge_product_data_addons', null, 3 );
+
+	function wpsc_cf_pd_merge_product_addons( $import, $product, $product_data ) {
+
+		if( isset( $product->custom_fields ) && $product->custom_fields ) {
+			foreach( $import->custom_options as $custom_option ) {
+				if( $product->custom_fields[$custom_option['slug']] <> $product_data->custom_fields[$custom_option['slug']] ) {
+					update_product_meta( $product->ID, $custom_option['slug'], $product->custom_fields[$custom_option['slug']] );
+					$product->updated = true;
+				}
+			}
+		}
+
+	}
+	add_filter( 'wpsc_pd_merge_product_addons', 'wpsc_cf_pd_merge_product_addons', null, 3 );
+
+	function wpsc_cf_pd_merge_product_log_addons( $import, $product, $product_data ) {
+
+		if( isset( $product->custom_fields ) && $product->custom_fields ) {
+			foreach( $import->custom_options as $custom_option ) {
+				if( $product->custom_fields[$custom_option['slug']] <> $product_data->custom_fields[$custom_option['slug']] )
+					$import->log .= "<br />>>>>>> " . __( "Updating Custom Field: ", 'wpsc_pd' ) . $custom_option['name'];
+			}
+		}
+
+	}
+	add_filter( 'wpsc_pd_merge_product_log_addons', 'wpsc_cf_pd_merge_product_log_addons', null, 3 );
 
 	/* End of: WordPress Administration */
 

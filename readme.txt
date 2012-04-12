@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
 Tested up to: 3.3.1
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 
 == Description ==
 
@@ -54,6 +54,11 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/wp-ecommerce/forums/
 
 == Changelog ==
+
+= 1.4.4 =
+* Changed: Moved Product Importer Deluxe integration into Plugin
+* Added: Checkbox and Radio Types
+* Changed: Re-labeled references from Custom Fields to Attribute
 
 = 1.4.3 =
 * Fixed: Custom Fields not saving more than one field

@@ -37,46 +37,65 @@ if( is_admin() ) {
 
 		global $wpdb, $wpsc_cf, $closed_postboxes;
 
-		$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) ); ?>
+		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) ); ?>
 <div id="wpsc_product_custom_fields" class="postbox <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['closed_postboxes'] ) !== false) ? 'closed"' : '' ); ?>" <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['hidden_postboxes'] ) !== false ) ? ' style="display: none;"' : '' ); ?>>
 	<h3 class="hndle"><?php echo $wpsc_cf['name']; ?></h3>
 	<div class="inside">
 		<div>
 			<p><span class="howto"><?php echo $wpsc_cf['name']; ?></span></p>
 <?php
-		if( $wpsc_cf_data ) {
-			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
+		if( $data ) {
+			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 			$i = 0;
-			foreach( $wpsc_cf_data as $wpsc_cf_field ) { ?>
-			<label><?php echo $wpsc_cf_field['name']; ?>:</label><br />
+			foreach( $data as $field ) { ?>
+			<label><?php echo $field['name']; ?>:</label><br />
 <?php
-				switch( $wpsc_cf_field['type'] ) {
+				switch( $field['type'] ) {
 
 					case 'input':
 						$output = '
-						<input type="text" id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $wpsc_cf_field['slug'] . ']" value="' . get_product_meta( $product_data['id'], $wpsc_cf_field['slug'], true ) . '" size="32" />
-						<span class="howto">' . $wpsc_cf_field['description'] . '</span>';
+						<input type="text" id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $field['slug'] . ']" value="' . get_product_meta( $product_data['id'], $field['slug'], true ) . '" size="32" />
+						<span class="howto">' . $field['description'] . '</span>';
 						break;
 
 					case 'textarea':
 						$output = '
-<textarea id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $wpsc_cf_field['slug'] . ']" rows="3" cols="30">' . get_product_meta( $product_data['id'], $wpsc_cf_field['slug'], true ) . '</textarea>
-<span class="howto">' . $wpsc_cf_field['description'] . '</span>';
+<textarea id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $field['slug'] . ']" rows="3" cols="30">' . get_product_meta( $product_data['id'], $field['slug'], true ) . '</textarea>
+<span class="howto">' . $field['description'] . '</span>';
 						break;
 
 					case 'dropdown':
 						$output = '
-<select id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $wpsc_cf_field['slug'] . ']">
+<select id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $field['slug'] . ']">
 	<option></option>';
-						if( $wpsc_cf_field['options'] ) {
-							$options = explode( '|', $wpsc_cf_field['options'] );
+						if( $field['options'] ) {
+							$options = explode( '|', $field['options'] );
 							foreach( $options as $option )
 								$output .= '
-	<option value="' . $option . '"' . selected( $option, get_product_meta( $product_data['id'], $wpsc_cf_field['slug'], true ), false ) . '>' . $option . '&nbsp;</option>' . "\n";
+	<option value="' . $option . '"' . selected( $option, get_product_meta( $product_data['id'], $field['slug'], true ), false ) . '>' . $option . '&nbsp;</option>' . "\n";
 						}
 							$output .= '
 </select>
-<span class="howto">' . $wpsc_cf_field['description'] . '</span>';
+<span class="howto">' . $field['description'] . '</span>';
+						break;
+
+					case 'checkbox':
+					case 'radio':
+						$output = '
+<fieldset id="wpsc_cf_product_fieldset_' . $i . '">';
+						if( $field['options'] ) {
+							$output .= print_r( get_product_meta( $product_data['id'], $field['slug'] ) );
+							$options = explode( '|', $field['options'] );
+							foreach( $options as $option )
+								$output .= '
+	<label><input type="' . $field['type'] . '" id="wpsc_cf_product_' . $i . '" name="productmeta_values[' . $field['slug'] . ']" value="' . $option . '"' . checked( $option, get_product_meta( $product_data['id'], $field['slug'], true ), false ) . ' />&nbsp;' . $option . '</label><br />' . "\n";
+						}
+							$output .= '
+</fieldset>
+<span class="howto">' . $field['description'] . '</span>';
+						break;
+
+					case 'radio':
 						break;
 
 				}
@@ -115,9 +134,9 @@ if( is_admin() ) {
 
 		global $wpsc_cf, $wpsc_query;
 
-		$wpsc_cf_data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
-		if( $wpsc_cf_data ) {
-			$wpsc_cf_data = wpsc_cf_custom_field_sort( $wpsc_cf_data, 'order' );
+		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		if( $data ) {
+			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 
 			if( $args ) {
 				$args_data = explode( '&', $args );
@@ -126,10 +145,10 @@ if( is_admin() ) {
 					$args_filter_data[$i] = explode( '=', $args_data[$i] );
 					if( in_array( 'slug', $args_filter_data[$i] ) ) {
 						$args_filter_value = $args_filter_data[$i][1];
-						foreach( $wpsc_cf_data as $wpsc_cf_field_id => $wpsc_cf_field ) {
-							if( $args_filter_value == $wpsc_cf_field['slug'] ) {
-								$wpsc_cf_data = array();
-								$wpsc_cf_data[] = $wpsc_cf_field;
+						foreach( $data as $field_id => $field ) {
+							if( $args_filter_value == $field['slug'] ) {
+								$data = array();
+								$data[] = $field;
 							}
 						}
 					}
@@ -137,7 +156,7 @@ if( is_admin() ) {
 			}
 
 			$layout = get_option( $wpsc_cf['prefix'] . '_layout' );
-			$custom_fields = $wpsc_cf_data;
+			$custom_fields = $data;
 
 			if( $layout ) {
 				if( file_exists( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout ) )
@@ -167,6 +186,8 @@ if( is_admin() ) {
 
 			case 'input':
 			case 'dropdown':
+			case 'checkbox':
+			case 'radio':
 				$output = stripcslashes( $custom_field['prefix'] ) . get_product_meta( wpsc_the_product_id(), $custom_field['slug'], true ) . stripslashes( $custom_field['suffix'] );
 				break;
 
