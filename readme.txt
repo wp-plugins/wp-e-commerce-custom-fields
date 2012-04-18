@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
 Tested up to: 3.3.1
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 
 == Description ==
 
@@ -54,6 +54,9 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/wp-ecommerce/forums/
 
 == Changelog ==
+
+= 1.4.5 =
+* Fixed: Product Importer Deluxe integration error
 
 = 1.4.4 =
 * Changed: Moved Product Importer Deluxe integration into Plugin

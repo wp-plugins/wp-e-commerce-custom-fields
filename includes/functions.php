@@ -62,7 +62,7 @@ if( is_admin() ) {
 
 	}
 
-	function wpsc_cf_pd_create_product_addons( $import, $product ) {
+	function wpsc_cf_pd_create_product_addons( $product, $import ) {
 
 		if( $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option ) {
@@ -90,7 +90,7 @@ if( is_admin() ) {
 	}
 	add_filter( 'wpsc_pd_create_product_addons', 'wpsc_cf_pd_create_product_addons', null, 2 );
 
-	function wpsc_cf_pd_merge_product_data_addons( $import, $product, $product_data ) {
+	function wpsc_cf_pd_merge_product_data_addons( $product_data, $product, $import ) {
 
 		if( $product->ID ) {
 			if( $import->custom_options ) {
@@ -105,7 +105,7 @@ if( is_admin() ) {
 	}
 	add_filter( 'wpsc_pd_merge_product_data_addons', 'wpsc_cf_pd_merge_product_data_addons', null, 3 );
 
-	function wpsc_cf_pd_merge_product_addons( $import, $product, $product_data ) {
+	function wpsc_cf_pd_merge_product_addons( $product, $import, $product_data ) {
 
 		if( isset( $product->custom_fields ) && $product->custom_fields ) {
 			foreach( $import->custom_options as $custom_option ) {
@@ -115,6 +115,7 @@ if( is_admin() ) {
 				}
 			}
 		}
+		return $product;
 
 	}
 	add_filter( 'wpsc_pd_merge_product_addons', 'wpsc_cf_pd_merge_product_addons', null, 3 );
@@ -127,6 +128,7 @@ if( is_admin() ) {
 					$import->log .= "<br />>>>>>> " . __( "Updating Custom Field: ", 'wpsc_pd' ) . $custom_option['name'];
 			}
 		}
+		return $import;
 
 	}
 	add_filter( 'wpsc_pd_merge_product_log_addons', 'wpsc_cf_pd_merge_product_log_addons', null, 3 );

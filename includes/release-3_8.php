@@ -159,7 +159,7 @@ if( is_admin() ) {
 		return $options;
 
 	}
-	add_filter( 'wpsc_pd_options_addons', 'wpsc_cf_pd_options_addons', $options );
+	add_filter( 'wpsc_pd_options_addons', 'wpsc_cf_pd_options_addons', null, 1 );
 
 	function wpsc_cf_pd_import_addons( $import, $csv_data ) {
 
@@ -168,7 +168,7 @@ if( is_admin() ) {
 			foreach( $import->custom_options as $custom_option ) {
 				if( isset( $csv_data[$custom_option['slug']] ) ) {
 					$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data[$custom_option['slug']] );
-					$import->log .= "<br />>>> " . __( 'Custom Field: ', 'wpsc_pd' ) . __( $custom_option['name'] . ' has been detected and grouped', 'wpsc_pd' );
+					$import->log .= "<br />>>> " . __( 'Attribute: ', 'wpsc_pd' ) . __( $custom_option['name'] . ' has been detected and grouped', 'wpsc_pd' );
 				}
 			}
 		}
@@ -182,7 +182,7 @@ if( is_admin() ) {
 		/* Attribute integration */
 		if( $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option )
-				if (isset($import->csv_custom[$custom_option['slug']][$count]))
+				if( isset( $import->csv_custom[$custom_option['slug']][$count] ) )
 					$product->custom_fields[$custom_option['slug']] = $import->csv_custom[$custom_option['slug']][$count];
 		}
 		return $product;
