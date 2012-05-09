@@ -151,10 +151,10 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		$custom_options = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		$custom_options = maybe_unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 		if( $custom_options ) {
 			foreach( $custom_options as $custom_option )
-				$options[] = array( $custom_option['slug'], __( 'Attribute', 'wpsc_pd' ) . ' - ' . $custom_option['name'] );
+				$options[] = array( 'attribute_' . $custom_option['slug'], __( 'Attribute', 'wpsc_pd' ) . ' - ' . $custom_option['name'] );
 		}
 		return $options;
 
@@ -166,8 +166,8 @@ if( is_admin() ) {
 		$import->custom_options = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 		if( $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option ) {
-				if( isset( $csv_data[$custom_option['slug']] ) ) {
-					$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data[$custom_option['slug']] );
+				if( isset( $csv_data['attribute_' . $custom_option['slug']] ) ) {
+					$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data['attribute_' . $custom_option['slug']] );
 					$import->log .= "<br />>>> " . __( 'Attribute: ', 'wpsc_pd' ) . __( $custom_option['name'] . ' has been detected and grouped', 'wpsc_pd' );
 				}
 			}

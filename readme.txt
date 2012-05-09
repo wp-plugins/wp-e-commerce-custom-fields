@@ -2,9 +2,9 @@
 
 Contributors: visser, Ryan Waggoner
 Donate link: http://www.visser.com.au/#donations
-Tags: wp-e-commerce, mod, custom fields, store templating
+Tags: e-commerce, wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
-Tested up to: 3.3.1
+Tested up to: 3.3.2
 Stable tag: 1.4.5
 
 == Description ==
@@ -23,11 +23,11 @@ For more information visit: http://www.visser.com.au/wp-ecommerce/
 
 ==== In WP e-Commerce 3.7 ====
 
-1. Open Store > Custom Fields within the WordPress Administration
+1. Open Store > Attributes within the WordPress Administration
 
 ==== In WP e-Commerce 3.8 ====
 
-1. Open Settings > Custom Fields within the WordPress Administration
+1. Open Products > Attributes within the WordPress Administration
 
 ====
 
@@ -57,6 +57,7 @@ http://www.visser.com.au/wp-ecommerce/forums/
 
 = 1.4.5 =
 * Fixed: Product Importer Deluxe integration error
+* Changed: Updated readme.txt for Attributes
 
 = 1.4.4 =
 * Changed: Moved Product Importer Deluxe integration into Plugin
