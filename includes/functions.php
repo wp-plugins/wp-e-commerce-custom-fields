@@ -66,7 +66,7 @@ if( is_admin() ) {
 
 		if( $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option ) {
-				if( $product->custom_fields[$custom_option['slug']] ) {
+				if( isset( $product->custom_fields[$custom_option['slug']] ) && $product->custom_fields[$custom_option['slug']] ) {
 					switch( wpsc_get_major_version() ) {
 
 						case '3.7':

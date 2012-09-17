@@ -37,12 +37,7 @@ if( is_admin() ) {
 
 		global $post, $wpdb, $wpsc_cf, $closed_postboxes;
 
-		$product_data = get_post_custom( $post->ID );
-		$product_data['meta'] = maybe_unserialize( $product_data );
-		foreach( $product_data['meta'] as $meta_key => $meta_value )
-			$product_data['meta'][$meta_key] = $meta_value[0];
-		$product_meta = maybe_unserialize( $product_data['_wpsc_product_metadata'][0] );
-
+		$product_meta = maybe_unserialize( get_post_meta( $post->ID, '_wpsc_product_metadata', true ) );
 		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
@@ -50,6 +45,7 @@ if( is_admin() ) {
 			foreach( $data as $field ) { ?>
 <label for="wpsc_cf_product_<?php echo $i; ?>"><?php echo $field['name']; ?>:</label><br />
 <?php
+				$output = '';
 				switch( $field['type'] ) {
 
 					case 'input':
@@ -119,32 +115,11 @@ if( is_admin() ) {
 <?php
 				$i++;
 			}
+		} else {
+			$output = '<p>' . __( 'No Attributes have been created.', 'wpsc_cf' ) . '</p>';
+			echo $output;
 		}
 	}
-
-	function wpsc_cf_update_product_meta( $product_id = null ) {
-
-		$custom_fields = maybe_unserialize( get_option( 'wpsc_cf_data' ) );
-		if( $custom_fields ) {
-			$checkbox_fields = array();
-			foreach( $custom_fields as $key => $custom_field ) {
-				if( $custom_field['type'] == 'checkbox' )
-					$checkbox_fields[] = $key;
-			}
-		}
-
-		if( $checkbox_fields ) {
-			foreach( $checkbox_fields as $checkbox_field ) {
-/*
-				if( $product_meta['_wpsc_' . $custom_fields[$checkbox_field]['slug']] ) {
-					print_r( $product_meta['_wpsc_' . $custom_fields[$checkbox_field]['slug']] );
-				}
-*/
-			}
-		}
-
-	}
-	//add_action( 'wpsc_edit_product', 'wpsc_cf_update_product_meta', $product_id );
 
 	/* Product Importer Deluxe integration */
 	function wpsc_cf_pd_options_addons( $options ) {
@@ -163,8 +138,10 @@ if( is_admin() ) {
 
 	function wpsc_cf_pd_import_addons( $import, $csv_data ) {
 
+		global $wpsc_cf;
+
 		$import->custom_options = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
-		if( $import->custom_options ) {
+		if( isset( $import->custom_options ) && $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option ) {
 				if( isset( $csv_data['attribute_' . $custom_option['slug']] ) ) {
 					$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data['attribute_' . $custom_option['slug']] );
@@ -194,7 +171,7 @@ if( is_admin() ) {
 
 		if( $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option ) {
-				if( $product->custom_fields[$custom_option['slug']] )
+				if( isset( $product->custom_fields[$custom_option['slug']] ) && $product->custom_fields[$custom_option['slug']] )
 					$import->log .= "<br />>>>>>> " . __( 'Setting ' . $custom_option['name'], 'wpsc_pd' );
 			}
 		}

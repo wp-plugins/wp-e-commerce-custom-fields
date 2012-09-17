@@ -19,13 +19,13 @@ if( $wp_plugins && $vl_plugins ) {
 				$output .= '<td><a href="' . $vl_plugin['url'] . '#toc-news" target="_blank">' . str_replace( ' for WP e-Commerce', '', $vl_plugin['name'] ) . '</a></td>';
 				if( isset( $vl_plugin['version_existing'] ) ) {
 					$output .= '<td class="version">' . $vl_plugin['version_existing'] . ' to <span>' . $vl_plugin['version'] . '</span></td>';
-					if( $vl_plugin['url'] )
-						$output .= '<td class="status"><a href="' . $vl_plugin['url'] . '#toc-update" target="_blank"><span class="red" title="Plugin update available for ' . $wp_plugin['Name'] . '.">Update</span></a></td>';
+					if( $vl_plugin['url'] && current_user_can( 'update_plugins' ) )
+						$output .= '<td class="status"><a href="update-core.php"><span class="red" title="Plugin update available for ' . $wp_plugin['Name'] . '.">' . __( 'Update', 'wpsc_vm' ) . '</span></a></td>';
 					else
-						$output .= '<td class="status"><span class="red" title="Plugin update available for ' . $wp_plugin['Name'] . '.">Update</span></td>';
+						$output .= '<td class="status"><span class="red" title="Plugin update available for ' . $wp_plugin['Name'] . '.">' . __( 'Update', 'wpsc_vm' ) . '</span></td>';
 				} elseif( isset( $vl_plugin['version_beta'] ) ) {
 					$output .= '<td class="version">' . $vl_plugin['version_beta'] . '</td>';
-					$output .= '<td class="status"><span class="yellow" title="' . str_replace( ' for WP e-Commerce', '', $vl_plugin['name'] ) . ' is from the future.">Beta</span></td>';
+					$output .= '<td class="status"><span class="yellow" title="' . str_replace( ' for WP e-Commerce', '', $vl_plugin['name'] ) . ' is from the future.">' . __( 'Beta', 'wpsc_vm' ) . '</span></td>';
 				} else {
 					$output .= '<td class="version">' . $vl_plugin['version'] . '</td>';
 					$output .= '<td class="status"><span class="green" title="' . str_replace( ' for WP e-Commerce', '', $vl_plugin['name'] ) . ' is up to date.">OK</span></td>';

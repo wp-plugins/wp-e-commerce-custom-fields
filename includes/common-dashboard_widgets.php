@@ -1,4 +1,12 @@
 <?php
+/*
+
+Filename: common-dashboard_widgets.php
+Description: common-dashboard_widgets.php loads commonly access Dashboard widgets across the Visser Labs suite.
+Version: 1.1
+
+*/
+
 /* Start of: WP e-Commerce News - by Visser Labs */
 
 if( !function_exists( 'wpsc_vl_dashboard_setup' ) ) {
@@ -70,9 +78,9 @@ if( !function_exists( 'wpsc_vm_dashboard_setup' ) ) {
 		$plugin_path = $wpsc_cf['abspath'];
 
 		$check = wp_remote_fopen( 'http://www.visser.com.au/?wpsc_vm_data' );
+		$vl_plugins = array();
 		if( $check ) {
 			$raw_plugins = explode( '<br />', $check );
-			$vl_plugins = array();
 			foreach( $raw_plugins as $raw_plugin ) {
 				$raw_plugin = explode( '@', $raw_plugin );
 				$vl_plugins[] = array(
@@ -87,7 +95,8 @@ if( !function_exists( 'wpsc_vm_dashboard_setup' ) ) {
 		foreach( $wp_plugins as $wp_plugin ) {
 			if( $wp_plugin['Author'] == 'Visser Labs' ) {
 				if( $vl_plugins ) {
-					for( $i = 0; $i < count( $vl_plugins ); $i++ ) {
+					$size = count( $vl_plugins );
+					for( $i = 0; $i < $size; $i++ ) {
 						if( $vl_plugins[$i]['name'] == $wp_plugin['Name'] ) {
 							$vl_plugins[$i]['name'] = str_replace( 'WP e-Commerce - ', '', $vl_plugins[$i]['name'] );
 							$vl_plugins[$i]['installed'] = true;
