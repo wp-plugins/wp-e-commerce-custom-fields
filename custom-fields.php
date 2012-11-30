@@ -41,7 +41,7 @@ $wpsc_cf = array(
 
 $wpsc_cf['prefix'] = 'wpsc_cf';
 $wpsc_cf['name'] = __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' );
-$wpsc_cf['menu'] = __( 'Attributes', 'wpsc_cf' );
+$wpsc_cf['menu'] = __( 'Custom Fields', 'wpsc_cf' );
 
 if( is_admin() ) {
 
@@ -52,35 +52,31 @@ if( is_admin() ) {
 
 	include_once( dirname( __FILE__ ) . '/includes/update.php' );
 
+	function wpsc_cf_add_settings_link( $links, $file ) {
+
+		static $this_plugin;
+		if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
+		if( $file == $this_plugin ) {
+			$settings_link = '<a href="' . add_query_arg( array( 'post_type' => 'wpsc-product', 'page' => 'wpsc_cf' ), 'edit.php' ) . '">' . __( 'Manage', 'wpsc_cf' ) . '</a>';
+			array_unshift( $links, $settings_link );
+		}
+		return $links;
+
+	}
+	add_filter( 'plugin_action_links', 'wpsc_cf_add_settings_link', 10, 2 );
+
 	function wpsc_cf_html_page() {
 
 		global $wpdb, $wpsc_cf;
 
-		wpsc_cf_template_header();
+		$title = __( 'Attributes', 'wpsc_cf' ) . '<a href="' . add_query_arg( array( 'action' => 'new' ) ) . '" class="button add-new-h2">' . __( 'Add New', 'wpsc_cf' ) . '</a>';
+		wpsc_cf_template_header( $title );
 		$action = wpsc_get_action();
 		switch( $action ) {
 
-			case 'update':
-				$position = $_POST['position'];
-				$layout = $_POST['layout'];
-				$display_title = $_POST['display_title'];
-				$title_text = $_POST['title_text'];
-
-				update_option( $wpsc_cf['prefix'] . '_position', $position );
-				update_option( $wpsc_cf['prefix'] . '_layout', $layout );
-				update_option( $wpsc_cf['prefix'] . '_display_title', $display_title );
-				update_option( $wpsc_cf['prefix'] . '_title_text', $title_text );
-
-				$message = __( 'Settings updated', 'wpsc_cf' );
-				$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
-				echo $output;
-
-				wpsc_cf_manage_form();
-				break;
-
 			case 'delete':
 				$id = $_GET['id'];
-				$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+				$data = unserialize( wpsc_cf_get_option( 'data' ) );
 				unset( $data[$id] );
 				$data = serialize( $data );
 
@@ -118,7 +114,7 @@ if( is_admin() ) {
 						'suffix' => $suffix,
 						'show_name' => $show_name
 					);
-					$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+					$data = unserialize( wpsc_cf_get_option( 'data' ) );
 					$data[$id]['name'] = $name;
 					$data[$id]['slug'] = $slug;
 					$data[$id]['type'] = $type;
@@ -131,7 +127,7 @@ if( is_admin() ) {
 					$data[$id]['description'] = $description;
 					$data = serialize( $data );
 
-					update_option( $wpsc_cf['prefix'] . '_data', $data );
+					wpsc_cf_update_option( 'data', $data );
 					unset( $data );
 
 					$message = __( 'Attribute updated', 'wpsc_cf' );
@@ -160,8 +156,8 @@ if( is_admin() ) {
 						$slug = strtolower( str_replace( ' ', '-', $slug ) );
 					}
 					$description = $_POST['custom-field-description'];
-					if( get_option( $wpsc_cf['prefix'] . '_data' ) ) {
-						$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+					if( wpsc_cf_get_option( 'data' ) ) {
+						$data = unserialize( wpsc_cf_get_option( 'data' ) );
 						$field = array(
 							'name' => $name, 
 							'slug' => $slug, 
@@ -208,9 +204,22 @@ if( is_admin() ) {
 
 			case 'edit':
 			case 'new':
+				$field = array(
+					'name' => null,
+					'slug' => null,
+					'type' => null,
+					'options' => null,
+					'order' => null,
+					'prefix' => null,
+					'suffix' => null,
+					'show_name' => null,
+					'description' => null
+				);
 				if( $action == 'edit' ) {
 					$id = $_GET['id'];
-					$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+					$data = unserialize( wpsc_cf_get_option( 'data' ) );
+					if( !isset( $data[$id]['options'] ) )
+						$data[$id]['options'] = '';
 					$field = $data[$id];
 				}
 
@@ -220,7 +229,7 @@ if( is_admin() ) {
 					$title = __( 'Add New Attribute', 'wpsc_cf' );
 				$options = wpsc_cf_custom_field_types();
 
-				include( 'templates/admin/wpsc-admin_cf_settings_detail.php' );
+				include( 'templates/admin/wpsc-admin_cf_manage-detail.php' );
 
 				break;
 
@@ -233,23 +242,70 @@ if( is_admin() ) {
 
 	}
 
+	function wpsc_cf_html_settings() {
+
+		global $wpsc_cf;
+
+		wpsc_cf_template_header();
+		$action = wpsc_get_action();
+		switch( $action ) {
+
+			case 'update':
+				$options = array();
+				$options['position'] = $_POST['position'];
+				$options['layout'] = $_POST['layout'];
+				$options['display_title'] = $_POST['display_title'];
+				$options['title_text'] = $_POST['title_text'];
+				foreach( $options as $key => $option )
+					wpsc_cf_update_option( $key, $option );
+
+				$message = __( 'Settings updated', 'wpsc_cf' );
+				$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
+				echo $output;
+
+				wpsc_cf_settings_form();
+				break;
+
+			default:
+				wpsc_cf_settings_form();
+				break;
+
+		}
+		wpsc_cf_template_footer();
+
+	}
+
 	function wpsc_cf_manage_form() {
+
+		global $wpsc_cf;
+
+		$data = wpsc_cf_get_option( 'data' );
+		if( $data ) {
+			if( wpsc_cf_is_serialized( $data ) )
+				$data = unserialize( $data );
+			$data = wpsc_cf_custom_field_sort( $data, 'order' );
+		}
+
+
+		include( 'templates/admin/wpsc-admin_cf_manage.php' );
+
+	}
+
+	function wpsc_cf_settings_form() {
 
 		global $wpsc_cf;
 
 		$positions = wpsc_productpage_positions();
 
 		$layouts = array();
-		$layouts[] = array( 'table.php', __( 'Table', 'wpsc_cf' ) );
-		$layouts[] = array( 'list-ordered.php', __( 'List - Ordered', 'wpsc_cf' ) );
-		$layouts[] = array( 'list-unordered.php', __( 'List - Unordered', 'wpsc_cf' ) );
+		$layouts[] = array( 'filename' => 'table.php', 'label' => __( 'Table', 'wpsc_cf' ) );
+		$layouts[] = array( 'filename' => 'list-ordered.php', 'label' => __( 'List - Ordered', 'wpsc_cf' ) );
+		$layouts[] = array( 'filename' => 'list-unordered.php', 'label' => __( 'List - Unordered', 'wpsc_cf' ) );
 
-		$data = get_option( $wpsc_cf['prefix'] . '_data' );
-		if( $data ) {
-			if( wpsc_cf_is_serialized( $data ) )
-				$data = unserialize( $data );
-			$data = wpsc_cf_custom_field_sort( $data, 'order' );
-		}
+		$position = wpsc_cf_get_option( 'position' );
+		$selected_layout = wpsc_cf_get_option( 'layout' );
+		$display_title = wpsc_cf_get_option( 'display_title' );
+		$title_text = wpsc_cf_get_option( 'title_text' );
 
 		include( 'templates/admin/wpsc-admin_cf_settings.php' );
 
@@ -264,8 +320,7 @@ if( is_admin() ) {
 	include_once( 'includes/template.php' );
 	include_once( 'includes/legacy.php' );
 
-	$position = get_option( $wpsc_cf['prefix'] . '_position' );
-
+	$position = wpsc_cf_get_option( 'position' );
 	if( $position )
 		add_action( $position, 'wpsc_cf_init' );
 	else

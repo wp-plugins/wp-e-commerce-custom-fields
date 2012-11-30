@@ -1,3 +1,5 @@
 <?php
-delete_option( 'wpsc_cf_data' );
+$prefix = 'wpsc_cf';
+
+delete_option( $prefix . '_data' );
 ?>

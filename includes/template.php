@@ -7,7 +7,7 @@ if( !is_admin() ) {
 
 		global $wpsc_cf;
 
-		$position = get_option( $wpsc_cf['prefix'] . '_position' );
+		$position = wpsc_cf_get_option( 'position' );
 		if( $args )
 			wpsc_cf_get_value( $args );
 		else if( $position == 'manual' )
@@ -19,7 +19,7 @@ if( !is_admin() ) {
 
 		global $wpsc_cf;
 
-		$display_title = get_option( $wpsc_cf['prefix'] . '_display_title' );
+		$display_title = wpsc_cf_get_option( 'display_title' );
 		return $display_title;
 
 	}
@@ -29,7 +29,7 @@ if( !is_admin() ) {
 		global $wpsc_cf;
 
 		$output = '';
-		$output = get_option( $wpsc_cf['prefix'] . '_title_text' );
+		$output = wpsc_cf_get_option( 'title_text' );
 		if( $output )
 			echo $output;
 
@@ -40,7 +40,7 @@ if( !is_admin() ) {
 		global $wpsc_cf;
 
 		$output = '';
-		$output = get_option( $wpsc_cf['prefix'] . '_title_text' );
+		$output = wpsc_cf_get_option( 'title_text' );
 		if( $output )
 			return $output;
 
@@ -78,7 +78,7 @@ if( !is_admin() ) {
 				switch( $key ) {
 
 					case 'slug':
-						$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+						$data = unserialize( wpsc_cf_get_option( 'data' ) );
 						if( $data ) {
 							foreach( $data as $key => $item ) {
 								if( $item['slug'] == $args['slug'] ) {

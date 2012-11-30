@@ -57,6 +57,10 @@ http://www.visser.com.au/wp-ecommerce/forums/
 
 = 1.4.6 =
 * Fixed: Validation for Product Importer Deluxe integration
+* Added: Manage Attribute link to Add/Edit Products
+* Added: Settings screen
+* Changed: Moved Settings to Settings screen
+* Fixed: Assigning multiple checkbox values to Products
 
 = 1.4.5 =
 * Fixed: Product Importer Deluxe integration error

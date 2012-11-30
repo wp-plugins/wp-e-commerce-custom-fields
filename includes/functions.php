@@ -3,14 +3,18 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	function wpsc_cf_template_header() {
+	function wpsc_cf_template_header( $title = null, $icon = 'tools' ) {
 
-		global $wpsc_cf; ?>
+		global $wpsc_cf;
+
+		if( $title )
+			$output = $title;
+		else
+			$output = $wpsc_cf['menu'];
+		$icon = wpsc_is_admin_icon_valid( $icon ); ?>
 <div class="wrap">
-	<div id="icon-tools" class="icon32"><br /></div>
-	<h2><?php echo $wpsc_cf['menu']; ?>
-		<a href="admin.php?page=wpsc_cf&action=new" class="button add-new-h2"><?php _e( 'Add New', 'wpsc_cf' ); ?></a>
-	</h2>
+	<div id="icon-<?php echo $icon; ?>" class="icon32"><br /></div>
+	<h2><?php echo $output; ?></h2>
 <?php
 	}
 
@@ -51,12 +55,30 @@ if( is_admin() ) {
 	function wpsc_cf_custom_field_types() {
 
 		$options = array();
-		$options[] = array( 'name' => 'input', 'label' => 'Input' );
-		$options[] = array( 'name' => 'textarea', 'label' => 'Textarea' );
-		$options[] = array( 'name' => 'dropdown', 'label' => 'Dropdown' );
-		$options[] = array( 'name' => 'wysiwyg', 'label' => 'Textarea (with Editor)' );
-		$options[] = array( 'name' => 'checkbox', 'label' => 'Checkbox List' );
-		$options[] = array( 'name' => 'radio', 'label' => 'Radio List' );
+		$options[] = array(
+			'name' => 'input',
+			'label' => __( 'Input', 'wpsc_ce' )
+		);
+		$options[] = array(
+			'name' => 'textarea',
+			'label' => __( 'Textarea', 'wpsc_ce' )
+		);
+		$options[] = array(
+			'name' => 'dropdown',
+			'label' => __( 'Dropdown', 'wpsc_ce' )
+		);
+		$options[] = array(
+			'name' => 'wysiwyg',
+			'label' => __( 'Textarea (with Editor)', 'wpsc_ce' )
+		);
+		$options[] = array(
+			'name' => 'checkbox',
+			'label' => __( 'Checkbox List', 'wpsc_ce' )
+		);
+		$options[] = array(
+			'name' => 'radio',
+			'label' => __( 'Radio List', 'wpsc_ce' )
+		);
 
 		return $options;
 
@@ -125,7 +147,7 @@ if( is_admin() ) {
 		if( isset( $product->custom_fields ) && $product->custom_fields ) {
 			foreach( $import->custom_options as $custom_option ) {
 				if( $product->custom_fields[$custom_option['slug']] <> $product_data->custom_fields[$custom_option['slug']] )
-					$import->log .= "<br />>>>>>> " . __( "Updating Custom Field: ", 'wpsc_pd' ) . $custom_option['name'];
+					$import->log .= "<br />>>>>>> " . sprintf( __( "Updating Attribute: %s", 'wpsc_pd' ), $custom_option['name'] );
 			}
 		}
 		return $import;
@@ -152,6 +174,35 @@ if( is_admin() ) {
 
 }
 
+/* Start of: Common */
+
+function wpsc_cf_get_option( $option = null, $default = false ) {
+
+	global $wpsc_cf;
+
+	$output = '';
+	if( isset( $option ) ) {
+		$separator = '_';
+		$output = get_option( $wpsc_cf['prefix'] . $separator . $option, $default );
+	}
+	return $output;
+
+}
+
+function wpsc_cf_update_option( $option = null, $value = null ) {
+
+	global $wpsc_cf;
+
+	$output = false;
+	if( isset( $option ) && isset( $value ) ) {
+		$separator = '_';
+		$output = update_option( $wpsc_cf['prefix'] . $separator . $option, $value );
+	}
+	return $output;
+
+}
+
+
 function wpsc_cf_custom_field_sort( $array, $key ) {
 
 	$sort = array();
@@ -167,4 +218,6 @@ function wpsc_cf_custom_field_sort( $array, $key ) {
 	return $array;
 
 }
+
+/* End of: Common */
 ?>

@@ -3,12 +3,18 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	/* WordPress Adminstration Menu */
+	/* WordPress Administration menu */
+	function wpsc_cf_admin_menu() {
+
+		add_options_page( __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_settings' );
+
+	}
+	add_action( 'admin_menu', 'wpsc_cf_admin_menu' );
+
+
 	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
 
-		global $wpsc_cf;
-
-		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], $wpsc_cf['menu'], 7, 'wpsc_cf', 'wpsc_cf_html_page' );
+		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], __( 'Attributes', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
 
 	}
@@ -19,7 +25,7 @@ if( is_admin() ) {
 		global $wpsc_cf;
 
 		$pagename = 'wpsc-product';
-		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['menu'], 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
+		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['menu'], 'wpsc_cf_meta_box', $pagename, 'normal', 'default' );
 
 	}
 	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
@@ -38,11 +44,12 @@ if( is_admin() ) {
 		global $post, $wpdb, $wpsc_cf, $closed_postboxes;
 
 		$product_meta = maybe_unserialize( get_post_meta( $post->ID, '_wpsc_product_metadata', true ) );
-		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		$data = unserialize( wpsc_cf_get_option( 'data' ) );
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 			$i = 0;
-			foreach( $data as $field ) { ?>
+			foreach( $data as $field ) {
+				$manage_attribute_url = sprintf( '<a href="%s">' . __( 'Manage Attribute', 'wpsc_cf' ) . '</a>', add_query_arg( array( 'post_type' => 'wpsc-product', 'page' => 'wpsc_cf', 'action' => 'edit', 'id' => $i ), 'edit.php' ) ); ?>
 <label for="wpsc_cf_product_<?php echo $i; ?>"><?php echo $field['name']; ?>:</label><br />
 <?php
 				$output = '';
@@ -61,34 +68,47 @@ if( is_admin() ) {
 						break;
 
 					case 'dropdown':
-						$output = '
+						if( isset( $field['options'] ) && $field['options'] ) {
+							$output = '
 <select id="wpsc_cf_product_' . $i . '" name="meta[' . WPSC_META_PREFIX . $field['slug'] . ']">
 	<option></option>';
-						if( $field['options'] ) {
 							$options = explode( '|', $field['options'] );
 							foreach( $options as $option )
 								$output .= '
 	<option value="' . $option . '"' . selected( $option, get_product_meta( $post->ID, $field['slug'], true ), false ) . '>' . $option . '&nbsp;</option>' . "\n";
+							$output .= '
+</select>';
+						} else {
+							$output .= '<span>' . sprintf( __( 'No options have been set for this Attribute. %s', 'wpsc_rp' ), $manage_attribute_url ) . '</span>';
 						}
 						$output .= '
-</select>
 <span class="howto">' . $field['description'] . '</span>';
 						break;
 
 					case 'checkbox':
 					case 'radio':
+						if( isset( $field['options'] ) && $field['options'] ) {
 						$output = '
 <fieldset id="wpsc_cf_product_fieldset_' . $i . '">';
-						if( $field['options'] ) {
 							$options = explode( '|', $field['options'] );
-							foreach( $options as $option )
+							$values = get_product_meta( $post->ID, $field['slug'], true );
+							foreach( $options as $option ) {
+								$selected = null;
+								if( $values ) {
+									if( in_array( $option, $values ) ) {
+										$key = array_search( $option, $values );
+										$selected = $values[$key];
+									}
+								}
 								$output .= '
-	<label><input type="' . $field['type'] . '" id="wpsc_cf_product_' . $i . '" name="meta[' . WPSC_META_PREFIX . $field['slug'] . ']" value="' . $option . '"' . checked( $option, get_product_meta( $post->ID, $field['slug'], true ), false ) . ' />&nbsp;' . $option . '</label><br />' . "\n";
-						} else {
-							$output .= '-';
-						}
+	<label><input type="' . $field['type'] . '" id="wpsc_cf_product_' . $i . '" name="meta[' . WPSC_META_PREFIX . $field['slug'] . '][]" value="' . $option . '"' . checked( $option, $selected, false ) . ' />&nbsp;' . $option . '</label><br />' . "\n";
+							}
 							$output .= '
-</fieldset>
+</fieldset>';
+						} else {
+							$output .= '<span>' . __( 'No options have been set for this Attribute.', 'wpsc_rp' ) . '</span>';
+						}
+						$output .= '
 <span class="howto">' . $field['description'] . '</span>';
 						break;
 
@@ -126,10 +146,10 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		$custom_options = maybe_unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		$custom_options = maybe_unserialize( wpsc_cf_get_option( 'data' ) );
 		if( $custom_options ) {
 			foreach( $custom_options as $custom_option )
-				$options[] = array( 'attribute_' . $custom_option['slug'], __( 'Attribute', 'wpsc_pd' ) . ' - ' . $custom_option['name'] );
+				$options[] = array( 'attribute_' . $custom_option['slug'], sprintf( __( 'Attribute - %s', 'wpsc_pd' ), $custom_option['name'] ) );
 		}
 		return $options;
 
@@ -140,12 +160,12 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		$import->custom_options = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		$import->custom_options = unserialize( wpsc_cf_get_option( 'data' ) );
 		if( isset( $import->custom_options ) && $import->custom_options ) {
 			foreach( $import->custom_options as $custom_option ) {
 				if( isset( $csv_data['attribute_' . $custom_option['slug']] ) ) {
 					$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data['attribute_' . $custom_option['slug']] );
-					$import->log .= "<br />>>> " . __( 'Attribute: ', 'wpsc_pd' ) . __( $custom_option['name'] . ' has been detected and grouped', 'wpsc_pd' );
+					$import->log .= "<br />>>> " . sprintf( __( 'Attribute: %s has been detected and grouped', 'wpsc_pd' ), $custom_option['name'] );
 				}
 			}
 		}
@@ -170,9 +190,10 @@ if( is_admin() ) {
 	function wpsc_cf_pd_create_product_log_addons( $import, $product ) {
 
 		if( $import->custom_options ) {
+			$import->log .= "<br />>>>>>> " . __( 'Setting Attributes', 'wpsc_pd' );
 			foreach( $import->custom_options as $custom_option ) {
 				if( isset( $product->custom_fields[$custom_option['slug']] ) && $product->custom_fields[$custom_option['slug']] )
-					$import->log .= "<br />>>>>>> " . __( 'Setting ' . $custom_option['name'], 'wpsc_pd' );
+					$import->log .= "<br />>>>>>>>>> " . sprintf( __( 'Setting %s: %s', 'wpsc_pd' ), $custom_option['name'], $product->custom_fields[$custom_option['slug']] );
 			}
 		}
 		return $import;
@@ -190,7 +211,7 @@ if( is_admin() ) {
 
 		global $wp_query, $wpsc_cf;
 
-		$position = get_option( $wpsc_cf['prefix'] . '_position' );
+		$position = wpsc_cf_get_option( 'position' );
 
 		if( $wp_query->is_single ) {
 			if( $position <> 'manual' )
@@ -203,11 +224,11 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		$data = unserialize( wpsc_cf_get_option( 'data' ) );
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 			$custom_fields = $data;
-			$layout = get_option( $wpsc_cf['prefix'] . '_layout' );
+			$layout = wpsc_cf_get_option( 'layout' );
 			if( $layout ) {
 				if( file_exists( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout ) )
 					include( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout );
@@ -242,7 +263,17 @@ if( is_admin() ) {
 			case 'dropdown':
 			case 'checkbox':
 			case 'radio':
-				$output = stripcslashes( $custom_field['prefix'] ) . get_post_meta( $post->ID, '_wpsc_' . $custom_field['slug'], true ) . stripslashes( $custom_field['suffix'] );
+				$values = get_post_meta( $post->ID, '_wpsc_' . $custom_field['slug'], true );
+				if( is_array( $values ) ) {
+					$value = '';
+					$size = count( $values );
+					for( $i = 0; $i < $size; $i++ )
+						$value .= $values[$i] . ', ';
+					$value = substr( $value, 0, -2 );
+				} else {
+					$value = $values;
+				}
+				$output = stripcslashes( $custom_field['prefix'] ) . $value . stripslashes( $custom_field['suffix'] );
 				break;
 
 			case 'textarea':

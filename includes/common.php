@@ -55,13 +55,7 @@ if( is_admin() ) {
 
 			$positions[] = array( 'wpsc_product_before_description', __( 'Before Description', 'wpsc_at' ) );
 			$positions[] = array( 'wpsc_product_addons', __( 'Addons', 'wpsc_at' ) );
-			switch( wpsc_get_major_version() ) {
-
-				case '3.7':
-					$positions[] = array( 'wpsc_product_addon_after_descr', __( 'After Description', 'wpsc_at' ) );
-					break;
-
-			}
+			$positions[] = array( 'wpsc_product_addon_after_descr', __( 'After Description', 'wpsc_at' ) );
 			$positions[] = array( 'manual', __( 'Manual', 'wpsc_at' ) );
 
 			return $positions;

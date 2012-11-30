@@ -13,7 +13,7 @@ if( !function_exists( 'wpsc_vl_dashboard_setup' ) ) {
 
 	function wpsc_vl_dashboard_setup() {
 
-		wp_add_dashboard_widget( 'wpsc_vl_news_widget', __( 'Plugin News - by Visser Labs', 'wpsc_vl' ), 'wpsc_vl_news_widget' );
+		wp_add_dashboard_widget( 'wpsc_vl_news_widget', __( 'WP e-Commerce Plugin News - by Visser Labs', 'wpsc_vl' ), 'wpsc_vl_news_widget' );
 
 	}
 	add_action( 'wp_dashboard_setup', 'wpsc_vl_dashboard_setup' );

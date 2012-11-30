@@ -8,7 +8,7 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], $wpsc_cf['menu'], 7, 'wpsc_cf', 'wpsc_cf_html_page' );
+		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], $wpsc_cf['menu'], 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
 
 	}
@@ -19,7 +19,7 @@ if( is_admin() ) {
 		global $wpsc_cf;
 
 		$pagename = 'store_page_wpsc-edit-products';
-		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['name'], 'wpsc_cf_meta_box', $pagename, 'normal', 'high' );
+		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['name'], 'wpsc_cf_meta_box', $pagename, 'normal', 'default' );
 
 	}
 	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
@@ -37,7 +37,7 @@ if( is_admin() ) {
 
 		global $wpdb, $wpsc_cf, $closed_postboxes;
 
-		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) ); ?>
+		$data = unserialize( wpsc_cf_get_option( 'data' ) ); ?>
 <div id="wpsc_product_custom_fields" class="postbox <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['closed_postboxes'] ) !== false) ? 'closed"' : '' ); ?>" <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['hidden_postboxes'] ) !== false ) ? ' style="display: none;"' : '' ); ?>>
 	<h3 class="hndle"><?php echo $wpsc_cf['name']; ?></h3>
 	<div class="inside">
@@ -121,7 +121,7 @@ if( is_admin() ) {
 
 		global $wpsc_query, $wpsc_cf;
 
-		$position = get_option( $wpsc_cf['prefix'] . '_position' );
+		$position = wpsc_cf_get_option( 'position' );
 
 		if( $wpsc_query->is_single ) {
 			if( $position <> 'manual' )
@@ -134,7 +134,7 @@ if( is_admin() ) {
 
 		global $wpsc_cf, $wpsc_query;
 
-		$data = unserialize( get_option( $wpsc_cf['prefix'] . '_data' ) );
+		$data = unserialize( wpsc_cf_get_option( 'data' ) );
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 
@@ -155,7 +155,7 @@ if( is_admin() ) {
 				}
 			}
 
-			$layout = get_option( $wpsc_cf['prefix'] . '_layout' );
+			$layout = wpsc_cf_get_option( 'layout' );
 			$custom_fields = $data;
 
 			if( $layout ) {
