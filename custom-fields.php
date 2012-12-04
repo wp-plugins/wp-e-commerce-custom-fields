@@ -3,7 +3,7 @@
 Plugin Name: WP e-Commerce - Custom Fields
 Plugin URI: http://www.visser.com.au/wp-ecommerce/plugins/custom-fields/
 Description: Add and manage custom Product meta details within WP e-Commerce.
-Version: 1.4.7
+Version: 1.4.8
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 Contributor: Ryan Waggoner

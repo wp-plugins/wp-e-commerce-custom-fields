@@ -4,6 +4,8 @@
 Filename: common.php
 Description: common.php loads commonly accessed functions across the Visser Labs suite.
 
+- wpsc_is_admin_icon_valid
+
 - wpsc_vl_migrate_prefix_options
 - wpsc_productpage_positions
 
@@ -62,6 +64,32 @@ if( is_admin() ) {
 
 		}
 
+	}
+
+	if( !function_exists( 'wpsc_is_admin_icon_valid' ) ) {
+		function wpsc_is_admin_icon_valid( $icon = 'tools' ) {
+
+			switch( $icon ) {
+
+				case 'index':
+				case 'edit':
+				case 'post':
+				case 'link':
+				case 'comments':
+				case 'page':
+				case 'users':
+				case 'upload':
+				case 'tools':
+				case 'plugins':
+				case 'themes':
+				case 'profile':
+				case 'admin':
+					return $icon;
+					break;
+
+			}
+
+		}
 	}
 
 	/* End of: WordPress Administration */
