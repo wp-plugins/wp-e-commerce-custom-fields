@@ -3,7 +3,7 @@ if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	function wpsc_cf_template_header( $title = null, $icon = 'tools' ) {
+	function wpsc_cf_template_header( $title = '', $icon = 'tools' ) {
 
 		global $wpsc_cf;
 

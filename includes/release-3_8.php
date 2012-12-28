@@ -11,8 +11,24 @@ if( is_admin() ) {
 	}
 	add_action( 'admin_menu', 'wpsc_cf_admin_menu' );
 
+	function wpsc_cf_add_toolbar_items( $admin_bar ){
+
+		$admin_bar->add_menu( array(
+			'id'    => 'new-attribute',
+			'parent' => 'new-content',
+			'title' => __( 'Attribute', 'wpsc_cf' ),
+			'href'  => self_admin_url( 'edit.php?post_type=wpsc-product&page=wpsc_cf' ),
+			'meta'  => array(
+				'title' => __( 'Attribute' )
+			),
+		));
+
+	}
+	add_action( 'admin_bar_menu', 'wpsc_cf_add_toolbar_items', 100 );
 
 	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
+
+		global $wpsc_cf;
 
 		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], __( 'Attributes', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
