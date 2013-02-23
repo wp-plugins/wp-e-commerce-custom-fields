@@ -4,8 +4,8 @@ Contributors: visser, Ryan Waggoner
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
-Tested up to: 3.5
-Stable tag: 1.4.9
+Tested up to: 3.5.1
+Stable tag: 1.5
 
 == Description ==
 
@@ -54,6 +54,9 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/wp-ecommerce/forums/
 
 == Changelog ==
+
+= 1.5 =
+* Added: Custom template support for Layouts
 
 = 1.4.9 =
 * Added: Attribute menu option to Add New top admin bar

@@ -3,7 +3,7 @@
 Plugin Name: WP e-Commerce - Custom Fields
 Plugin URI: http://www.visser.com.au/wp-ecommerce/plugins/custom-fields/
 Description: Add and manage custom Product meta details within WP e-Commerce.
-Version: 1.4.9
+Version: 1.5
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 Contributor: Ryan Waggoner
@@ -57,7 +57,7 @@ if( is_admin() ) {
 		static $this_plugin;
 		if( !$this_plugin ) $this_plugin = plugin_basename( __FILE__ );
 		if( $file == $this_plugin ) {
-			$settings_link = '<a href="' . add_query_arg( array( 'post_type' => 'wpsc-product', 'page' => 'wpsc_cf' ), 'edit.php' ) . '">' . __( 'Manage', 'wpsc_cf' ) . '</a>';
+			$settings_link = sprintf( '<a href="%s">' . __( 'Manage', 'wpsc_cf' ) . '</a>', add_query_arg( array( 'post_type' => 'wpsc-product', 'page' => 'wpsc_cf' ), 'edit.php' ) );
 			array_unshift( $links, $settings_link );
 		}
 		return $links;
@@ -293,14 +293,13 @@ if( is_admin() ) {
 
 	function wpsc_cf_settings_form() {
 
-		global $wpsc_cf;
-
 		$positions = wpsc_productpage_positions();
 
 		$layouts = array();
 		$layouts[] = array( 'filename' => 'table.php', 'label' => __( 'Table', 'wpsc_cf' ) );
 		$layouts[] = array( 'filename' => 'list-ordered.php', 'label' => __( 'List - Ordered', 'wpsc_cf' ) );
 		$layouts[] = array( 'filename' => 'list-unordered.php', 'label' => __( 'List - Unordered', 'wpsc_cf' ) );
+		$layouts = apply_filters( 'wpsc_cf_layouts', $layouts );
 
 		$position = wpsc_cf_get_option( 'position' );
 		$selected_layout = wpsc_cf_get_option( 'layout' );
@@ -320,11 +319,8 @@ if( is_admin() ) {
 	include_once( 'includes/template.php' );
 	include_once( 'includes/legacy.php' );
 
-	$position = wpsc_cf_get_option( 'position' );
-	if( $position )
-		add_action( $position, 'wpsc_cf_init' );
-	else
-		add_action( 'wpsc_product_addon_after_descr', 'wpsc_cf_init' );
+	$position = wpsc_cf_get_option( 'position', 'wpsc_product_addon_after_descr' );
+	add_action( $position, 'wpsc_cf_init' );
 
 	/* End of: Storefront */
 

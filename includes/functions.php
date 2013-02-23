@@ -165,8 +165,6 @@ if( is_admin() ) {
 
 		if( $show_name )
 			return $show_name;
-		else
-			return true;
 
 	}
 

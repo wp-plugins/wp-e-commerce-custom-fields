@@ -225,7 +225,7 @@ if( is_admin() ) {
 
 	function wpsc_cf_init() {
 
-		global $wp_query, $wpsc_cf;
+		global $wp_query;
 
 		$position = wpsc_cf_get_option( 'position' );
 
