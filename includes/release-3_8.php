@@ -107,7 +107,7 @@ if( is_admin() ) {
 						$output = '
 <fieldset id="wpsc_cf_product_fieldset_' . $i . '">';
 							$options = explode( '|', $field['options'] );
-							$values = get_product_meta( $post->ID, $field['slug'], true );
+							$values = (array)get_product_meta( $post->ID, $field['slug'], true );
 							foreach( $options as $option ) {
 								$selected = null;
 								if( $values ) {
@@ -268,38 +268,49 @@ if( is_admin() ) {
 
 	}
 
-	function wpsc_cf_value( $custom_field ) {
+	function wpsc_cf_value( $custom_field = array() ) {
+
+		$output = '';
+		if( $custom_field )
+			$output = wpsc_cf_get_value( $custom_field );
+		echo $output;
+
+	}
+
+	function wpsc_cf_get_value( $custom_field = array() ) {
 
 		global $post;
 
 		$output = '';
-		switch( $custom_field['type'] ) {
+		if( $custom_field ) {
+			switch( $custom_field['type'] ) {
 
-			case 'input':
-			case 'dropdown':
-			case 'checkbox':
-			case 'radio':
-				$values = get_post_meta( $post->ID, '_wpsc_' . $custom_field['slug'], true );
-				if( is_array( $values ) ) {
-					$value = '';
-					$size = count( $values );
-					for( $i = 0; $i < $size; $i++ )
-						$value .= $values[$i] . ', ';
-					$value = substr( $value, 0, -2 );
-				} else {
-					$value = $values;
-				}
-				$output = stripcslashes( $custom_field['prefix'] ) . $value . stripslashes( $custom_field['suffix'] );
-				break;
+				case 'input':
+				case 'dropdown':
+				case 'checkbox':
+				case 'radio':
+					$values = get_post_meta( $post->ID, '_wpsc_' . $custom_field['slug'], true );
+					if( is_array( $values ) ) {
+						$value = '';
+						$size = count( $values );
+						for( $i = 0; $i < $size; $i++ )
+							$value .= $values[$i] . ', ';
+						$value = substr( $value, 0, -2 );
+					} else {
+						$value = $values;
+					}
+					$output = stripcslashes( $custom_field['prefix'] ) . $value . stripslashes( $custom_field['suffix'] );
+					break;
 
-			case 'textarea':
-			case 'wysiwyg':
-				$output = stripcslashes( $custom_field['prefix'] ) . get_post_meta( $post->ID, '_wpsc_' . $custom_field['slug'], true ) . stripslashes( $custom_field['suffix'] );
-				$output = str_replace( "\n", '<br />', $output );
-				break;
+				case 'textarea':
+				case 'wysiwyg':
+					$output = stripcslashes( $custom_field['prefix'] ) . get_post_meta( $post->ID, '_wpsc_' . $custom_field['slug'], true ) . stripslashes( $custom_field['suffix'] );
+					$output = str_replace( "\n", '<br />', $output );
+					break;
 
+			}
 		}
-		echo $output;
+		return $output;
 
 	}
 

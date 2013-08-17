@@ -23,6 +23,7 @@
 	.wpsc_vm_version_table td.status {
 		text-align:center;
 		border:1px dotted #ddd;
+		background-color:transparent;
 	}
 		.wpsc_vm_version_table td.status .green {
 			color:#008000;

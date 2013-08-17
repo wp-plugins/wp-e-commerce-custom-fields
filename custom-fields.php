@@ -3,7 +3,7 @@
 Plugin Name: WP e-Commerce - Custom Fields
 Plugin URI: http://www.visser.com.au/wp-ecommerce/plugins/custom-fields/
 Description: Add and manage custom Product meta details within WP e-Commerce.
-Version: 1.5
+Version: 1.5.2
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 Contributor: Ryan Waggoner
@@ -69,19 +69,21 @@ if( is_admin() ) {
 
 		global $wpdb, $wpsc_cf;
 
-		$title = __( 'Attributes', 'wpsc_cf' ) . '<a href="' . add_query_arg( array( 'action' => 'new' ) ) . '" class="button add-new-h2">' . __( 'Add New', 'wpsc_cf' ) . '</a>';
+		$title = __( 'Attributes ', 'wpsc_cf' ) . '<a href="' . add_query_arg( array( 'action' => 'new' ) ) . '" class="add-new-h2">' . __( 'Add New', 'wpsc_cf' ) . '</a>';
 		wpsc_cf_template_header( $title );
 		$action = wpsc_get_action();
 		switch( $action ) {
 
 			case 'delete':
-				$id = $_GET['id'];
-				$data = unserialize( wpsc_cf_get_option( 'data' ) );
-				unset( $data[$id] );
-				$data = serialize( $data );
-
-				update_option( $wpsc_cf['prefix'] . '_data', $data );
-				unset( $data );
+				$id = (int)$_GET['id'];
+				$data = wpsc_cf_get_option( 'data' );
+				if( !empty( $data ) ) {
+					$data = maybe_unserialize( $data );
+					unset( $data[$id] );
+					$data = serialize( $data );
+					update_option( $wpsc_cf['prefix'] . '_data', $data );
+					unset( $data );
+				}
 
 				$message = __( 'Attribute deleted', 'wpsc_cf' );
 				$output = '<div class="updated settings-error"><p><strong>' . $message . '.</strong></p></div>';
@@ -216,17 +218,19 @@ if( is_admin() ) {
 					'description' => null
 				);
 				if( $action == 'edit' ) {
-					$id = $_GET['id'];
-					$data = unserialize( wpsc_cf_get_option( 'data' ) );
-					if( !isset( $data[$id]['options'] ) )
-						$data[$id]['options'] = '';
-					$field = $data[$id];
+					$id = (int)$_GET['id'];
+					$data = wpsc_cf_get_option( 'data' );
+					if( !empty( $data ) ) {
+						$data = maybe_unserialize( $data );
+						if( !isset( $data[$id]['options'] ) )
+							$data[$id]['options'] = '';
+						$field = $data[$id];
+					}
 				}
 
+				$title = __( 'Add New Attribute', 'wpsc_cf' );
 				if( $action == 'edit' )
 					$title = __( 'Edit Attribute', 'wpsc_cf' );
-				else
-					$title = __( 'Add New Attribute', 'wpsc_cf' );
 				$options = wpsc_cf_custom_field_types();
 
 				include( 'templates/admin/wpsc-admin_cf_manage-detail.php' );

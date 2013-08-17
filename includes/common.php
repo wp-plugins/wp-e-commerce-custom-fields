@@ -129,8 +129,14 @@ if( !function_exists( 'wpsc_get_major_version' ) ) {
 
 	function wpsc_get_major_version() {
 
-		$version = get_option( 'wpsc_version' );
-		return substr( $version, 0, 3 );
+		$output = '';
+		if( defined( 'WPSC_VERSION' ) )
+			$version = WPSC_VERSION;
+		else
+			$version = get_option( 'wpsc_version' );
+		if( $version )
+			$output = substr( $version, 0, 3 );
+		return $output;
 
 	}
 
