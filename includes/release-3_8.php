@@ -272,12 +272,12 @@ if( is_admin() ) {
 
 		$output = '';
 		if( $custom_field )
-			$output = wpsc_cf_get_value( $custom_field );
+			$output = wpsc_cf_return_value( $custom_field );
 		echo $output;
 
 	}
 
-	function wpsc_cf_get_value( $custom_field = array() ) {
+	function wpsc_cf_return_value( $custom_field = array() ) {
 
 		global $post;
 

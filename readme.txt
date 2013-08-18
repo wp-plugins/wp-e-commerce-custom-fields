@@ -5,7 +5,7 @@ Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
 Tested up to: 3.7
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 
 == Description ==
 
@@ -54,6 +54,9 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/wp-ecommerce/forums/
 
 == Changelog ==
+
+= 1.5.3 =
+* Fixed: Duplicate function error
 
 = 1.5.2 =
 * Added: Added wpsc_cf_get_value()
