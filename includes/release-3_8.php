@@ -157,66 +157,6 @@ if( is_admin() ) {
 		}
 	}
 
-	/* Product Importer Deluxe integration */
-	function wpsc_cf_pd_options_addons( $options ) {
-
-		global $wpsc_cf;
-
-		$custom_options = maybe_unserialize( wpsc_cf_get_option( 'data' ) );
-		if( $custom_options ) {
-			foreach( $custom_options as $custom_option )
-				$options[] = array( 'attribute_' . $custom_option['slug'], sprintf( __( 'Attribute - %s', 'wpsc_pd' ), $custom_option['name'] ) );
-		}
-		return $options;
-
-	}
-	add_filter( 'wpsc_pd_options_addons', 'wpsc_cf_pd_options_addons', null, 1 );
-
-	function wpsc_cf_pd_import_addons( $import, $csv_data ) {
-
-		global $wpsc_cf;
-
-		$import->custom_options = unserialize( wpsc_cf_get_option( 'data' ) );
-		if( isset( $import->custom_options ) && $import->custom_options ) {
-			foreach( $import->custom_options as $custom_option ) {
-				if( isset( $csv_data['attribute_' . $custom_option['slug']] ) ) {
-					$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data['attribute_' . $custom_option['slug']] );
-					$import->log .= "<br />>>> " . sprintf( __( 'Attribute: %s has been detected and grouped', 'wpsc_pd' ), $custom_option['name'] );
-				}
-			}
-		}
-		return $import;
-
-	}
-	add_filter( 'wpsc_pd_import_addons', 'wpsc_cf_pd_import_addons', null, 2 );
-
-	function wpsc_cf_pd_product_addons( $product, $import, $count ) {
-
-		/* Attribute integration */
-		if( $import->custom_options ) {
-			foreach( $import->custom_options as $custom_option )
-				if( isset( $import->csv_custom[$custom_option['slug']][$count] ) )
-					$product->custom_fields[$custom_option['slug']] = $import->csv_custom[$custom_option['slug']][$count];
-		}
-		return $product;
-
-	}
-	add_filter( 'wpsc_pd_product_addons', 'wpsc_cf_pd_product_addons', null, 3 );
-
-	function wpsc_cf_pd_create_product_log_addons( $import, $product ) {
-
-		if( $import->custom_options ) {
-			$import->log .= "<br />>>>>>> " . __( 'Setting Attributes', 'wpsc_pd' );
-			foreach( $import->custom_options as $custom_option ) {
-				if( isset( $product->custom_fields[$custom_option['slug']] ) && $product->custom_fields[$custom_option['slug']] )
-					$import->log .= "<br />>>>>>>>>> " . sprintf( __( 'Setting %s: %s', 'wpsc_pd' ), $custom_option['name'], $product->custom_fields[$custom_option['slug']] );
-			}
-		}
-		return $import;
-
-	}
-	add_filter( 'wpsc_pd_create_product_log_addons', 'wpsc_cf_pd_create_product_log_addons', null, 2 );
-
 	/* End of: WordPress Administration */
 
 } else {
@@ -317,4 +257,71 @@ if( is_admin() ) {
 	/* End of: Storefront */
 
 }
+
+/* Start of: Common */
+
+/* Product Importer Deluxe integration */
+function wpsc_cf_pd_options_addons( $options ) {
+
+	global $wpsc_cf;
+
+	$custom_options = maybe_unserialize( wpsc_cf_get_option( 'data' ) );
+	if( $custom_options ) {
+		foreach( $custom_options as $custom_option )
+			$options[] = array( 'attribute_' . $custom_option['slug'], sprintf( __( 'Attribute: %s', 'wpsc_pd' ), $custom_option['name'] ) );
+	}
+	return $options;
+
+}
+add_filter( 'wpsc_pd_options_addons', 'wpsc_cf_pd_options_addons', null, 1 );
+
+function wpsc_cf_pd_import_addons( $import, $csv_data ) {
+
+	global $wpsc_cf;
+
+	$import->custom_options = unserialize( wpsc_cf_get_option( 'data' ) );
+	if( isset( $import->custom_options ) && $import->custom_options ) {
+		// echo '<code>' . print_r( $csv_data, true ) . '</code>';
+		// echo '<br />';
+		foreach( $import->custom_options as $custom_option ) {
+			// echo ' - ' . $custom_option['slug'] . '<br />';
+			if( isset( $csv_data['attribute_' . $custom_option['slug']] ) ) {
+				$import->csv_custom[$custom_option['slug']] = array_filter( $csv_data['attribute_' . $custom_option['slug']] );
+				$import->log .= "<br />>>> " . sprintf( __( 'Attribute: %s has been detected and grouped', 'wpsc_pd' ), $custom_option['name'] );
+			}
+		}
+	}
+	return $import;
+
+}
+add_filter( 'wpsc_pd_import_addons', 'wpsc_cf_pd_import_addons', null, 2 );
+
+function wpsc_cf_pd_product_addons( $product, $import, $count ) {
+
+	/* Attribute integration */
+	if( $import->custom_options ) {
+		foreach( $import->custom_options as $custom_option )
+			if( isset( $import->csv_custom[$custom_option['slug']][$count] ) )
+				$product->custom_fields[$custom_option['slug']] = $import->csv_custom[$custom_option['slug']][$count];
+	}
+	return $product;
+
+}
+add_filter( 'wpsc_pd_product_addons', 'wpsc_cf_pd_product_addons', null, 3 );
+
+function wpsc_cf_pd_create_product_log_addons( $import, $product ) {
+
+	if( $import->custom_options ) {
+		$import->log .= "<br />>>>>>> " . __( 'Setting Attributes', 'wpsc_pd' );
+		foreach( $import->custom_options as $custom_option ) {
+			if( isset( $product->custom_fields[$custom_option['slug']] ) && $product->custom_fields[$custom_option['slug']] )
+				$import->log .= "<br />>>>>>>>>> " . sprintf( __( 'Setting %s: %s', 'wpsc_pd' ), $custom_option['name'], $product->custom_fields[$custom_option['slug']] );
+		}
+	}
+	return $import;
+
+}
+add_filter( 'wpsc_pd_create_product_log_addons', 'wpsc_cf_pd_create_product_log_addons', null, 2 );
+
+/* End of: Common */
 ?>

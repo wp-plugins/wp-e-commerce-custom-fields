@@ -3,7 +3,7 @@
 Plugin Name: WP e-Commerce - Custom Fields
 Plugin URI: http://www.visser.com.au/wp-ecommerce/plugins/custom-fields/
 Description: Add and manage custom Product meta details within WP e-Commerce.
-Version: 1.5.3
+Version: 1.5.4
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 Contributor: Ryan Waggoner
@@ -69,9 +69,11 @@ if( is_admin() ) {
 
 		global $wpdb, $wpsc_cf;
 
-		$title = __( 'Attributes ', 'wpsc_cf' ) . '<a href="' . add_query_arg( array( 'action' => 'new' ) ) . '" class="add-new-h2">' . __( 'Add New', 'wpsc_cf' ) . '</a>';
-		wpsc_cf_template_header( $title );
+		$title = __( 'Attributes ', 'wpsc_cf' );
 		$action = wpsc_get_action();
+		if( !in_array( $action, array( 'new', 'edit' ) ) )
+			$title .= '<a href="' . add_query_arg( array( 'action' => 'new' ) ) . '" class="add-new-h2">' . __( 'Add New', 'wpsc_cf' ) . '</a>';
+		wpsc_cf_template_header( $title );
 		switch( $action ) {
 
 			case 'delete':
@@ -102,7 +104,9 @@ if( is_admin() ) {
 				$suffix = $_POST['custom-field-suffix'];
 				$show_name = $_POST['custom-field-show-name'];
 				if( isset( $id ) && $name && $slug && $type ) {
-					$options = $_POST['custom-field-options'];
+					$options = '';
+					if( isset( $_POST['custom-field-options'] ) )
+						$options = $_POST['custom-field-options'];
 					$description = $_POST['custom-field-description'];
 					$field = array();
 					$field[] = array(
@@ -289,7 +293,7 @@ if( is_admin() ) {
 				$data = unserialize( $data );
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
 		}
-
+		$i = 0;
 
 		include( 'templates/admin/wpsc-admin_cf_manage.php' );
 
