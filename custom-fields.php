@@ -3,7 +3,7 @@
 Plugin Name: WP e-Commerce - Custom Fields
 Plugin URI: http://www.visser.com.au/wp-ecommerce/plugins/custom-fields/
 Description: Add and manage custom Product meta details within WP e-Commerce.
-Version: 1.5.4
+Version: 1.5.5
 Author: Visser Labs
 Author URI: http://www.visser.com.au/about/
 Contributor: Ryan Waggoner
@@ -31,26 +31,19 @@ switch( wpsc_get_major_version() ) {
 
 }
 
-$wpsc_cf = array(
-	'filename' => basename( __FILE__ ),
-	'dirname' => basename( dirname( __FILE__ ) ),
-	'abspath' => dirname( __FILE__ ),
-	'relpath' => basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ),
-	'prefix_separator' => '_'
-);
-
-$wpsc_cf['prefix'] = 'wpsc_cf';
-$wpsc_cf['name'] = __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' );
-$wpsc_cf['menu'] = __( 'Custom Fields', 'wpsc_cf' );
+define( 'WPSC_CF_FILE', __FILE__ );
+define( 'WPSC_CF_DIRNAME', basename( dirname( __FILE__ ) ) );
+define( 'WPSC_CF_PATH', plugin_dir_path( __FILE__ ) );
+define( 'WPSC_CF_PREFIX', 'wpsc_cf' );
 
 if( is_admin() ) {
 
 	/* Start of: WordPress Administration */
 
-	include_once( 'includes/install.php' );
+	include_once( WPSC_CF_PATH . 'includes/install.php' );
 	register_activation_hook( __FILE__, 'wpsc_cf_install' );
 
-	include_once( dirname( __FILE__ ) . '/includes/update.php' );
+	include_once( WPSC_CF_PATH . 'includes/update.php' );
 
 	function wpsc_cf_add_settings_link( $links, $file ) {
 
@@ -83,7 +76,7 @@ if( is_admin() ) {
 					$data = maybe_unserialize( $data );
 					unset( $data[$id] );
 					$data = serialize( $data );
-					update_option( $wpsc_cf['prefix'] . '_data', $data );
+					update_option( 'wpsc_cf_data', $data );
 					unset( $data );
 				}
 
@@ -176,7 +169,7 @@ if( is_admin() ) {
 						);
 						$data[] = $field;
 						$data = serialize( $data );
-						update_option( $wpsc_cf['prefix'] . '_data', $data );
+						update_option( 'wpsc_cf_data', $data );
 					} else {
 						$data = array();
 						$data[] = array(
@@ -190,7 +183,7 @@ if( is_admin() ) {
 							'show_name' => $show_name
 						);
 						$data = serialize( $data );
-						update_option( $wpsc_cf['prefix'] . '_data', $data );
+						update_option( 'wpsc_cf_data', $data );
 					}
 					unset( $data );
 
@@ -237,7 +230,7 @@ if( is_admin() ) {
 					$title = __( 'Edit Attribute', 'wpsc_cf' );
 				$options = wpsc_cf_custom_field_types();
 
-				include( 'templates/admin/wpsc-admin_cf_manage-detail.php' );
+				include_once( WPSC_CF_PATH . 'templates/admin/wpsc-admin_cf_manage-detail.php' );
 
 				break;
 
@@ -254,7 +247,8 @@ if( is_admin() ) {
 
 		global $wpsc_cf;
 
-		wpsc_cf_template_header();
+		$title = __( 'Custom Fields', 'wpsc_cf' );
+		wpsc_cf_template_header( $title );
 		$action = wpsc_get_action();
 		switch( $action ) {
 
@@ -295,7 +289,7 @@ if( is_admin() ) {
 		}
 		$i = 0;
 
-		include( 'templates/admin/wpsc-admin_cf_manage.php' );
+		include_once( WPSC_CF_PATH . 'templates/admin/wpsc-admin_cf_manage.php' );
 
 	}
 
@@ -314,7 +308,7 @@ if( is_admin() ) {
 		$display_title = wpsc_cf_get_option( 'display_title' );
 		$title_text = wpsc_cf_get_option( 'title_text' );
 
-		include( 'templates/admin/wpsc-admin_cf_settings.php' );
+		include_once( WPSC_CF_PATH . 'templates/admin/wpsc-admin_cf_settings.php' );
 
 	}
 
@@ -324,8 +318,8 @@ if( is_admin() ) {
 
 	/* Start of: Storefront */
 
-	include_once( 'includes/template.php' );
-	include_once( 'includes/legacy.php' );
+	include_once( WPSC_CF_PATH . 'includes/template.php' );
+	include_once( WPSC_CF_PATH . 'includes/legacy.php' );
 
 	$position = wpsc_cf_get_option( 'position', 'wpsc_product_addon_after_descr' );
 	add_action( $position, 'wpsc_cf_init' );

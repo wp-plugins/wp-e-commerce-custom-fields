@@ -5,8 +5,6 @@ if( !is_admin() ) {
 
 	function wpsc_the_custom_fields( $args = null ) {
 
-		global $wpsc_cf;
-
 		$position = wpsc_cf_get_option( 'position' );
 		if( $args )
 			wpsc_cf_get_value( $args );
@@ -17,16 +15,12 @@ if( !is_admin() ) {
 
 	function wpsc_cf_show_title() {
 
-		global $wpsc_cf;
-
 		$display_title = wpsc_cf_get_option( 'display_title' );
 		return $display_title;
 
 	}
 
 	function wpsc_cf_title() {
-
-		global $wpsc_cf;
 
 		$output = '';
 		$output = wpsc_cf_get_option( 'title_text' );
@@ -36,8 +30,6 @@ if( !is_admin() ) {
 	}
 
 	function wpsc_cf_get_title() {
-
-		global $wpsc_cf;
 
 		$output = '';
 		$output = wpsc_cf_get_option( 'title_text' );
@@ -65,8 +57,6 @@ if( !is_admin() ) {
 	}
 
 	function wpsc_cf_get_value( $args = null ) {
-
-		global $wpsc_cf;
 
 		if( $args ) {
 			$defaults = array(

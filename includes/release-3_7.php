@@ -6,9 +6,7 @@ if( is_admin() ) {
 	/* WordPress Adminstration Menu */
 	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
 
-		global $wpsc_cf;
-
-		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], $wpsc_cf['menu'], 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
+		$page_hooks[] = add_submenu_page( $base_page, __( 'Custom Fields for WP e-Commerce', 'wpsc_cf' ), __( 'Custom Fields', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
 
 	}
@@ -16,10 +14,8 @@ if( is_admin() ) {
 
 	function wpsc_cf_init_meta_box() {
 
-		global $wpsc_cf;
-
 		$pagename = 'store_page_wpsc-edit-products';
-		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['name'], 'wpsc_cf_meta_box', $pagename, 'normal', 'default' );
+		add_meta_box( 'wpsc_cf_meta_box', __( 'Attributes', 'wpsc_cf' ), 'wpsc_cf_meta_box', $pagename, 'normal', 'default' );
 
 	}
 	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
@@ -35,14 +31,14 @@ if( is_admin() ) {
 
 	function wpsc_cf_meta_box( $product_data = array() ) {
 
-		global $wpdb, $wpsc_cf, $closed_postboxes;
+		global $wpdb, $closed_postboxes;
 
 		$data = unserialize( wpsc_cf_get_option( 'data' ) ); ?>
 <div id="wpsc_product_custom_fields" class="postbox <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['closed_postboxes'] ) !== false) ? 'closed"' : '' ); ?>" <?php echo( ( array_search( 'wpsc_cf_meta_box', (array)$product_data['hidden_postboxes'] ) !== false ) ? ' style="display: none;"' : '' ); ?>>
-	<h3 class="hndle"><?php echo $wpsc_cf['name']; ?></h3>
+	<h3 class="hndle"><?php _e( 'Attributes', 'wpsc_cf' ); ?></h3>
 	<div class="inside">
 		<div>
-			<p><span class="howto"><?php echo $wpsc_cf['name']; ?></span></p>
+			<p><span class="howto"><?php _e( 'Attributes', 'wpsc_cf' ); ?></span></p>
 <?php
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
@@ -119,7 +115,7 @@ if( is_admin() ) {
 
 	function wpsc_cf_init() {
 
-		global $wpsc_query, $wpsc_cf;
+		global $wpsc_query;
 
 		$position = wpsc_cf_get_option( 'position' );
 
@@ -132,7 +128,7 @@ if( is_admin() ) {
 
 	function wpsc_cf_html_product( $args = null ) {
 
-		global $wpsc_cf, $wpsc_query;
+		global $wpsc_query;
 
 		$data = unserialize( wpsc_cf_get_option( 'data' ) );
 		if( $data ) {
@@ -162,9 +158,9 @@ if( is_admin() ) {
 				if( file_exists( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout ) )
 					include( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout );
 				else
-					include( $wpsc_cf['abspath'] . '/templates/store/wpsc-single_product_customfields_' . $layout );
+					include( WPSC_CF_PATH . 'templates/store/wpsc-single_product_customfields_' . $layout );
 			} else {
-				include( $wpsc_cf['abspath'] . '/templates/store/wpsc-single_product_customfields_table.php' );
+				include( WPSC_CF_PATH . 'templates/store/wpsc-single_product_customfields_table.php' );
 			}
 
 		}

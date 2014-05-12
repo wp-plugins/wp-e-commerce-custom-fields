@@ -5,16 +5,10 @@ if( is_admin() ) {
 
 	function wpsc_cf_template_header( $title = '', $icon = 'tools' ) {
 
-		global $wpsc_cf;
-
-		if( $title )
-			$output = $title;
-		else
-			$output = $wpsc_cf['menu'];
 		$icon = wpsc_is_admin_icon_valid( $icon ); ?>
 <div class="wrap">
 	<div id="icon-<?php echo $icon; ?>" class="icon32"><br /></div>
-	<h2><?php echo $output; ?></h2>
+	<h2><?php echo $title; ?></h2>
 <?php
 	}
 
@@ -105,12 +99,10 @@ if( is_admin() ) {
 
 function wpsc_cf_get_option( $option = null, $default = false ) {
 
-	global $wpsc_cf;
-
 	$output = '';
 	if( isset( $option ) ) {
 		$separator = '_';
-		$output = get_option( $wpsc_cf['prefix'] . $separator . $option, $default );
+		$output = get_option( WPSC_CF_PREFIX . $separator . $option, $default );
 	}
 	return $output;
 
@@ -118,12 +110,10 @@ function wpsc_cf_get_option( $option = null, $default = false ) {
 
 function wpsc_cf_update_option( $option = null, $value = null ) {
 
-	global $wpsc_cf;
-
 	$output = false;
 	if( isset( $option ) && isset( $value ) ) {
 		$separator = '_';
-		$output = update_option( $wpsc_cf['prefix'] . $separator . $option, $value );
+		$output = update_option( WPSC_CF_PREFIX . $separator . $option, $value );
 	}
 	return $output;
 

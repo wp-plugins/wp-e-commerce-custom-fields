@@ -28,9 +28,7 @@ if( is_admin() ) {
 
 	function wpsc_cf_add_modules_admin_pages( $page_hooks, $base_page ) {
 
-		global $wpsc_cf;
-
-		$page_hooks[] = add_submenu_page( $base_page, $wpsc_cf['name'], __( 'Attributes', 'wpsc_cf' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
+		$page_hooks[] = add_submenu_page( $base_page, __( 'Custom Fields', 'wpsc_cf' ), __( 'Attributes', 'wpsc_pd' ), 'manage_options', 'wpsc_cf', 'wpsc_cf_html_page' );
 		return $page_hooks;
 
 	}
@@ -38,10 +36,8 @@ if( is_admin() ) {
 
 	function wpsc_cf_init_meta_box() {
 
-		global $wpsc_cf;
-
 		$pagename = 'wpsc-product';
-		add_meta_box( 'wpsc_cf_meta_box', $wpsc_cf['menu'], 'wpsc_cf_meta_box', $pagename, 'normal', 'default' );
+		add_meta_box( 'wpsc_cf_meta_box', __( 'Attributes', 'wpsc_cf' ), 'wpsc_cf_meta_box', $pagename, 'normal', 'default' );
 
 	}
 	add_action( 'admin_menu', 'wpsc_cf_init_meta_box' );
@@ -57,7 +53,7 @@ if( is_admin() ) {
 
 	function wpsc_cf_meta_box() {
 
-		global $post, $wpdb, $wpsc_cf, $closed_postboxes;
+		global $post, $wpdb, $closed_postboxes;
 
 		$product_meta = maybe_unserialize( get_post_meta( $post->ID, '_wpsc_product_metadata', true ) );
 		$data = unserialize( wpsc_cf_get_option( 'data' ) );
@@ -178,8 +174,6 @@ if( is_admin() ) {
 
 	function wpsc_cf_html_product( $args = null ) {
 
-		global $wpsc_cf;
-
 		$data = unserialize( wpsc_cf_get_option( 'data' ) );
 		if( $data ) {
 			$data = wpsc_cf_custom_field_sort( $data, 'order' );
@@ -187,11 +181,11 @@ if( is_admin() ) {
 			$layout = wpsc_cf_get_option( 'layout' );
 			if( $layout ) {
 				if( file_exists( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout ) )
-					include( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout );
+					include_once( STYLESHEETPATH . '/wpsc-single_product_customfields_' . $layout );
 				else
-					include( $wpsc_cf['abspath'] . '/templates/store/wpsc-single_product_customfields_' . $layout );
+					include_once( WPSC_CF_PATH . 'templates/store/wpsc-single_product_customfields_' . $layout );
 			} else {
-				include( $wpsc_cf['abspath'] . '/templates/store/wpsc-single_product_customfields_table.php' );
+				include_once( WPSC_CF_PATH . 'templates/store/wpsc-single_product_customfields_table.php' );
 			}
 
 		}
@@ -263,8 +257,6 @@ if( is_admin() ) {
 /* Product Importer Deluxe integration */
 function wpsc_cf_pd_options_addons( $options ) {
 
-	global $wpsc_cf;
-
 	$custom_options = maybe_unserialize( wpsc_cf_get_option( 'data' ) );
 	if( $custom_options ) {
 		foreach( $custom_options as $custom_option )
@@ -276,8 +268,6 @@ function wpsc_cf_pd_options_addons( $options ) {
 add_filter( 'wpsc_pd_options_addons', 'wpsc_cf_pd_options_addons', null, 1 );
 
 function wpsc_cf_pd_import_addons( $import, $csv_data ) {
-
-	global $wpsc_cf;
 
 	$import->custom_options = unserialize( wpsc_cf_get_option( 'data' ) );
 	if( isset( $import->custom_options ) && $import->custom_options ) {

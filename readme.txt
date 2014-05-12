@@ -4,8 +4,8 @@ Contributors: visser, Ryan Waggoner
 Donate link: http://www.visser.com.au/#donations
 Tags: e-commerce, wp-e-commerce, mod, custom fields, store templating
 Requires at least: 2.9.2
-Tested up to: 3.7
-Stable tag: 1.5.4
+Tested up to: 3.9.1
+Stable tag: 1.5.5
 
 == Description ==
 
@@ -54,6 +54,11 @@ If you have any problems, questions or suggestions please join the members discu
 http://www.visser.com.au/wp-ecommerce/forums/
 
 == Changelog ==
+
+= 1.5.5 =
+* Fixed: Attribute menu not visible under Products
+* Changed: Removed $wpsc_cf global
+* Added: WPSC_CF prefixed Plugin constants
 
 = 1.5.4 =
 * Fixed: Product Importer Deluxe CRON support
