@@ -152,6 +152,7 @@ function wpsc_cf_pd_create_product_addons( $product, $import ) {
 						break;
 
 					case '3.8':
+					case '3.9':
 						update_product_meta( $product->ID, $custom_option['slug'], $product->custom_fields[$custom_option['slug']] );
 						break;
 
